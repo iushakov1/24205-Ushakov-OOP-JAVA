@@ -1,4 +1,1 @@
 # 24205-Ushakov-OOP-JAVA
-# 24205-Ushakov-OOP-JAVA
-# 24205-Ushakov-OOP-JAVA
-# 24205-Ushakov-OOP-JAVA
