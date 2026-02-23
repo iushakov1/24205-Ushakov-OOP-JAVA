@@ -10,7 +10,7 @@ public class BullsAndCowsEvaluator {
         Objects.requireNonNull(secret, "Secret cannot be null");
         Objects.requireNonNull(guess, "Guess cannot be null");
         if(secret.length() != guess.length()){
-            logger.warn("incorrect length of <guess> and <secret>");
+            logger.warn("incorrect length of <guess> and <secret>: guessLen={}, secretLen={}", guess.length(), secret.length());
             throw new IllegalArgumentException("Length mismatch");
         }
 
