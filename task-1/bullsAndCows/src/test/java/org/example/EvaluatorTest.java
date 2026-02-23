@@ -24,6 +24,7 @@ public class EvaluatorTest {
 
         assertEquals(0, result.bulls());
         assertEquals(4, result.cows());
+        assertFalse(result.isWin());
     }
 
     @Test
@@ -32,5 +33,6 @@ public class EvaluatorTest {
 
         assertEquals(1, result.bulls());
         assertEquals(1, result.bulls());
+        assertFalse(result.isWin());
     }
 }

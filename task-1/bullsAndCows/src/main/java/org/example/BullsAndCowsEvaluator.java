@@ -1,13 +1,16 @@
 package org.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Objects;
 
 public class BullsAndCowsEvaluator {
+    private static final Logger logger = LoggerFactory.getLogger(BullsAndCowsEvaluator.class);
     public GuessResult evaluate(String secret, String guess){
         Objects.requireNonNull(secret, "Secret cannot be null");
         Objects.requireNonNull(guess, "Guess cannot be null");
-
         if(secret.length() != guess.length()){
+            logger.warn("incorrect length of <guess> and <secret>");
             throw new IllegalArgumentException("Length mismatch");
         }
 
@@ -36,7 +39,7 @@ public class BullsAndCowsEvaluator {
                 }
             }
         }
-
+        logger.info("returning result: {} <bulls>, {} cows, user is win = {}", bulls, cows, bulls == secret.length());
         return new GuessResult(bulls, cows, bulls == secret.length());
     }
 }
