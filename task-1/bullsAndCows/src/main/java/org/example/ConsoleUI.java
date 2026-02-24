@@ -5,14 +5,13 @@ import org.slf4j.LoggerFactory;
 import java.util.Scanner;
 
 public class ConsoleUI implements GameUI{
-    private static final Logger ui = LoggerFactory.getLogger("UserInterface");
     private static final Logger logger = LoggerFactory.getLogger(ConsoleUI.class);
     private final Scanner scanner = new Scanner(System.in);
 
     @Override
     public int getUserIntInput(String message) {
         while (true) {
-            ui.info("{}", message);
+            System.out.println(message);
             String input = scanner.nextLine();
             logger.debug("User input an integer: {}", input);
             try {
@@ -21,19 +20,19 @@ public class ConsoleUI implements GameUI{
                 return value;
             } catch (NumberFormatException e) {
                 logger.warn("Failed to parse an integer from input: {}", input);
-                ui.info("Error: write an integer number\n");
+                System.out.println("Error: write an integer number\n");
             }
         }
     }
 
     @Override
     public void showMessage(String message){
-        ui.info("{}\n", message);
+        System.out.println(message);
     }
 
     @Override
     public String getUserInput(){
-        ui.info("> ");
+        System.out.print("> ");
         String input = scanner.nextLine().trim();
         logger.debug("read user input: {}", input);
         return input;
@@ -42,16 +41,16 @@ public class ConsoleUI implements GameUI{
     @Override
     public void showGuessResult(GuessResult result){
         logger.debug("Game result: Bulls={}, Cows={}", result.bulls(), result.cows());
-        ui.info("Results: {} bulls, {} cows\n", result.bulls(), result.cows());
+        System.out.println("Results: " + result.bulls() + " bulls, " + result.cows() + " cows");
     }
 
     @Override
     public void showGameStatus(int attemptsLeft, long timeLeftSeconds){
         logger.debug("Status: {} attempts left, {}s remain", attemptsLeft, timeLeftSeconds);
-        ui.info("[Attempts: {}]", attemptsLeft);
+        System.out.print("[Attempts: " + attemptsLeft + "]");
         if(timeLeftSeconds > 0){
-            ui.info("[Time: {}s", timeLeftSeconds);
+            System.out.print("[Time: " + timeLeftSeconds +"s");
         }
-        ui.info("\n");
+        System.out.println();
     }
 }

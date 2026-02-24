@@ -1,10 +1,4 @@
 <configuration>
-    <appender name="USER_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%msg</pattern>
-        </encoder>
-    </appender>
-
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/debug.log</file>
         <encoder>
@@ -16,7 +10,4 @@
         <appender-ref ref="FILE" />
     </root>
 
-    <logger name="UserInterface" level="info" additivity="false">
-        <appender-ref ref="USER_CONSOLE" />
-    </logger>
 </configuration>
