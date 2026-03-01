@@ -10,14 +10,9 @@ import java.util.List;
 public class PopCommand implements Command {
     @Override
     public void execute(ExecutionContext context, List<String> args) throws CalculatorException{
-        try {
-            if(context.getStack().peekFirst() == null){
-                throw new StackUnderFlowException();
-            }
-            System.out.println(context.getStack().pop());
+        if(context.getStack().peekFirst() == null){
+            throw new StackUnderFlowException();
         }
-        catch (StackUnderFlowException e){
-
-        }
+        System.out.println(context.getStack().pop());
     }
 }

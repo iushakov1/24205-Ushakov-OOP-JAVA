@@ -2,6 +2,9 @@ package org.calc.commands;
 
 import org.calc.ExecutionContext;
 import org.calc.exceptions.CalculatorException;
+import org.calc.exceptions.InvalidArgumentException;
+import org.calc.exceptions.NotEnoughInputException;
+import org.calc.exceptions.StackUnderFlowException;
 
 import java.util.List;
 
@@ -10,6 +13,9 @@ public class PushCommand implements Command {
     @Override
     public void execute(ExecutionContext context, List<String> args) throws CalculatorException{
         Double value;
+        if(args.isEmpty()){
+            throw new NotEnoughInputException();
+        }
         String arg = args.get(0);
         if(context.getParameters().containsKey(arg)){
             value = context.getParameters().get(arg);
@@ -19,7 +25,7 @@ public class PushCommand implements Command {
                 value = Double.parseDouble(arg);
             }
             catch (NumberFormatException e){
-                throw new CalculatorException("Unknown parameter or number: " + arg);
+                throw new InvalidArgumentException(arg);
             }
         }
         context.getStack().push(value);

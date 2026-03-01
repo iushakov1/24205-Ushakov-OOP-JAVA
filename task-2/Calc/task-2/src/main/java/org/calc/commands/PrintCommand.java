@@ -10,15 +10,10 @@ import java.util.List;
 public class PrintCommand implements Command{
     @Override
     public void execute(ExecutionContext context, List<String> args) throws CalculatorException{
-        try{
-            Double el = context.getStack().peekFirst();
-            if(el == null){
-                throw new StackUnderFlowException();
-            }
-            System.out.println(el);
+        Double el = context.getStack().peekFirst();
+        if(el == null){
+            throw new StackUnderFlowException();
         }
-        catch (StackUnderFlowException e){
-
-        }
+        System.out.println(el);
     }
 }

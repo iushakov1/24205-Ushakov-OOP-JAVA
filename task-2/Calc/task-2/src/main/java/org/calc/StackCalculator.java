@@ -3,13 +3,39 @@ package org.calc;
 import org.calc.commands.Command;
 import org.calc.exceptions.CalculatorException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.InputStream;
 import java.util.*;
 
 public class StackCalculator {
-    private final CommandFactory factory = new CommandFactory();
+    private final CommandManager manager = new CommandManager();
     private final ExecutionContext context = new ExecutionContext();
-    //добавить логгер
+    private static final Logger logger = LoggerFactory.getLogger(StackCalculator.class);
+
+    public void executeCommand(String line) throws CalculatorException{
+        if(line == null || line.trim().isEmpty()){
+            logger.trace("Empty or null line given on execute");
+            return;
+        }
+        String[] parts = line.trim().split("\\s+");
+        String cmdName = parts[0].toUpperCase();
+
+        List<String> args = new ArrayList<>();
+        for(int i = 1; i < parts.length; ++i){
+            args.add(parts[i]);
+        }
+        logger.debug("Got next args: {}", args);
+
+        Command command = manager.createCommand(cmdName);
+        if(command == null){
+            logger.warn("Unknown command when execute {}", cmdName);
+            throw new CalculatorException("Unknown command: " + cmdName);
+        }
+        command.execute(context, args);
+    }
+
     public void run(InputStream input){
         Scanner scanner = new Scanner(input);
         while(scanner.hasNextLine()){
@@ -17,24 +43,36 @@ public class StackCalculator {
             if(line.isEmpty()){
                 continue;
             }
+            if(line.equalsIgnoreCase("exit")){
+                logger.debug("finished working");
+                return;
+            }
 
             String[] parts = line.split("\\s+");
-            String cmdName = parts[0];
+            String cmdName = parts[0].toUpperCase();
             List<String> args = new ArrayList<>();
             for(int i = 1; i < parts.length; ++i){
                 args.add(parts[i]);
             }
+            logger.debug("Got next line: {}", args);
 
             try{
-                Command command = factory.createCommand(cmdName);
+                Command command = manager.createCommand(cmdName);
                 if(command == null){
+                    logger.warn("Unknown command when running: {}", cmdName);
                     throw new CalculatorException("Unknown command: " + cmdName);
                 }
+                logger.debug("Now executing: {}", cmdName);
                 command.execute(context, args);
             }
             catch (CalculatorException e){
-                System.out.println("Error: " + e.getMessage());
+                logger.warn("Error while creating command: {}", e.getMessage());
+                System.out.println("Failed to execute command: " + cmdName);
             }
         }
+    }
+    
+    public ExecutionContext getContext(){
+        return context;
     }
 }
