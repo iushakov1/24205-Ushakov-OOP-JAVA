@@ -1,4 +1,4 @@
-package org.calc;
+package org.calc.core;
 
 import org.calc.commands.Command;
 

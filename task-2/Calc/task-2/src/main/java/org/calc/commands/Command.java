@@ -1,6 +1,5 @@
 package org.calc.commands;
 
-import org.calc.ExecutionContext;
 import org.calc.exceptions.CalculatorException;
 
 import java.util.List;

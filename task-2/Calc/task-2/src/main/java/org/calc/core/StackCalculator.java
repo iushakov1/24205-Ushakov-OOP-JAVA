@@ -1,7 +1,8 @@
-package org.calc;
+package org.calc.core;
 
+import org.calc.commands.ExecutionContext;
 import org.calc.commands.Command;
-import org.calc.exceptions.CalculatorException;
+import org.calc.exceptions.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,6 @@ public class StackCalculator {
 
         Command command = manager.createCommand(cmdName);
         if(command == null){
-            logger.warn("Unknown command when execute {}", cmdName);
             throw new CalculatorException("Unknown command: " + cmdName);
         }
         command.execute(context, args);
@@ -50,7 +50,7 @@ public class StackCalculator {
 
             String[] parts = line.split("\\s+");
             String cmdName = parts[0].toUpperCase();
-            List<String> args = new ArrayList<>();
+            List<String> args = new ArrayList<String>();
             for(int i = 1; i < parts.length; ++i){
                 args.add(parts[i]);
             }
@@ -59,7 +59,6 @@ public class StackCalculator {
             try{
                 Command command = manager.createCommand(cmdName);
                 if(command == null){
-                    logger.warn("Unknown command when running: {}", cmdName);
                     throw new CalculatorException("Unknown command: " + cmdName);
                 }
                 logger.debug("Now executing: {}", cmdName);

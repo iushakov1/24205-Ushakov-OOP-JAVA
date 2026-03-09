@@ -1,4 +1,4 @@
-package org.calc;
+package org.calc.commands;
 
 import java.util.*;
 

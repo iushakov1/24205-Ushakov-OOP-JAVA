@@ -1,13 +1,12 @@
-package org.calc.commands;
+package org.commands;
 
-import org.calc.ExecutionContext;
-import org.calc.exceptions.CalculatorException;
-import org.calc.exceptions.StackUnderFlowException;
+import org.calc.commands.*;
+import org.calc.exceptions.*;
 
 import java.util.List;
 
-@CommandName("PLUS")
-public class PlusCommand implements Command{
+@CommandName("MINUS")
+public class MinusCommand implements Command{
     @Override
     public void execute(ExecutionContext context, List<String> args) throws CalculatorException{
         if(context.getStack().size() < 2){
@@ -17,6 +16,6 @@ public class PlusCommand implements Command{
         Double b = context.getStack().pop();
         Double a = context.getStack().pop();
 
-        context.getStack().push(a + b);
+        context.getStack().push(a - b);
     }
 }

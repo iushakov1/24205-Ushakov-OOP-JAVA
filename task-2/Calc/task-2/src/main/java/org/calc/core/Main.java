@@ -1,6 +1,7 @@
-package org.calc;
+package org.calc.core;
 
 import java.io.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

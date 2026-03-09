@@ -1,10 +1,7 @@
-package org.calc.commands;
+package org.commands;
 
-import org.calc.ExecutionContext;
-import org.calc.exceptions.CalculatorException;
-import org.calc.exceptions.InvalidArgumentException;
-import org.calc.exceptions.NotEnoughInputException;
-import org.calc.exceptions.StackUnderFlowException;
+import org.calc.commands.*;
+import org.calc.exceptions.*;
 
 import java.util.List;
 

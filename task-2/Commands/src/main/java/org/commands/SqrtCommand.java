@@ -1,11 +1,8 @@
-package org.calc.commands;
+package org.commands;
 
-import org.calc.ExecutionContext;
-import org.calc.exceptions.CalculatorException;
-import org.calc.exceptions.SqrtOfNegativValException;
-import org.calc.exceptions.StackUnderFlowException;
+import org.calc.commands.*;
+import org.calc.exceptions.*;
 
-import java.awt.desktop.QuitResponse;
 import java.util.List;
 import java.lang.Math;
 

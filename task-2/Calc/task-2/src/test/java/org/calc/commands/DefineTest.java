@@ -1,6 +1,6 @@
 package org.calc.commands;
 
-import org.calc.StackCalculator;
+import org.calc.core.StackCalculator;
 import org.calc.exceptions.CalculatorException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
