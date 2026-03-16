@@ -5,6 +5,8 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,32 +45,67 @@ public class CommandManager {
                     continue;
                 }
                 String[] parts = line.split(":");
-                if(parts.length < 2){
-                    logger.error("invalid config line: {}", line);
-                    continue;
+
+                if(parts.length == 1){
+                    String jarPath = parts[0].trim();
+                    File file = new File(jarPath);
+                    URL[] urls = {file.toURI().toURL()};
+                    try(JarFile jarFile = new JarFile(jarPath);
+                    URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader());)
+                    {
+                        Enumeration<JarEntry> entries = jarFile.entries();
+
+                        while(entries.hasMoreElements()){
+                            JarEntry entry = entries.nextElement();
+                            if(entry.getName().endsWith(".class")){
+                                String className = entry.getName()
+                                        .replace("/", ".")
+                                        .replace(".class", "");
+                                Class<?> cls = Class.forName(className, true, loader);
+                                if(cls.isAnnotationPresent(CommandName.class)){
+                                    String name = cls.getAnnotation(CommandName.class).value();
+                                    creators.put(name, new ConcreteCommandCreator((Class<? extends Command>) cls));
+                                }
+                            }
+                        }
+                        logger.info("Successfully loaded commands from {}", jarPath);
+                    }
+                    catch (IOException e){
+                        logger.warn("I/O error when read jar: {}", jarPath);
+                    }
+                    catch (SecurityException e){
+                        logger.warn("The jar is secured: {}", jarPath);
+                    }
+                    catch (Exception e){
+                        logger.warn("Error when reading archive: {}", jarPath);
+                    }
                 }
+                else if(parts.length == 2){
+                    String jarPath = parts[0].trim();
+                    String className = parts[1].trim();
 
-                String jarPath = parts[0].trim();
-                String className = parts[1].trim();
+                    try{
+                        File jarFile = new File(jarPath);
+                        URL jarUrl = jarFile.toURI().toURL();
 
-                try{
-                    File jarFile = new File(jarPath);
-                    URL jarUrl = jarFile.toURI().toURL();
-
-                    URLClassLoader loader = new URLClassLoader(
+                        URLClassLoader loader = new URLClassLoader(
                             new URL[]{jarUrl},
                             this.getClass().getClassLoader()
-                    );
+                        );
 
-                    Class<?> cls = Class.forName(className, true, loader);
+                        Class<?> cls = Class.forName(className, true, loader);
 
-                    if(cls.isAnnotationPresent(CommandName.class)){
-                        String name = cls.getAnnotation(CommandName.class).value();
-                        logger.info("Successfully loaded command: {} from {}", name, jarPath);
-                        creators.put(name, new ConcreteCommandCreator((Class<? extends Command>) cls));
+                        if(cls.isAnnotationPresent(CommandName.class)){
+                            String name = cls.getAnnotation(CommandName.class).value();
+                            logger.info("Successfully loaded command: {} from {}", name, jarPath);
+                            creators.put(name, new ConcreteCommandCreator((Class<? extends Command>) cls));
+                        }
+                    } catch (Exception e){
+                        logger.error("Failed to load class {} from {}: {}", className, jarPath, e.getMessage());
                     }
-                } catch (Exception e){
-                    logger.error("Failed to load class {} from {}: {}", className, jarPath, e.getMessage());
+                }
+                else{
+                    logger.warn("incorrect config line: {}", line);
                 }
             }
         }
