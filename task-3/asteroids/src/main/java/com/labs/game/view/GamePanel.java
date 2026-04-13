@@ -1,20 +1,21 @@
 package com.labs.game.view;
 
 import com.labs.game.model.GameModel;
-import com.labs.game.model.Ship;
+import com.labs.game.model.entities.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
+import java.util.List;
 
 public class GamePanel extends JPanel implements ActionListener {
     private GameModel model;
 
-    public GamePanel(GameModel model){
+    public GamePanel(GameModel model, int width, int height){
         this.model = model;
-        this.setPreferredSize(new Dimension(600, 800));
+        this.setPreferredSize(new Dimension(width, height));
         setBackground(Color.BLACK);
     }
 
@@ -29,6 +30,8 @@ public class GamePanel extends JPanel implements ActionListener {
 
     private void render(Graphics2D g2d){
         drawShip(g2d, model.getShip());
+        drawAsteroids(g2d, model.getAsteroids());
+        drawBullet(g2d, model.getBullets());
     }
 
     @Override
@@ -42,12 +45,43 @@ public class GamePanel extends JPanel implements ActionListener {
         g2d.translate((int)ship.getX(), (int)ship.getY());
         g2d.rotate(ship.getAngleRadians());
 
-        int[] xPoints = {15, -10, -10};
-        int[] yPoints = {0, 10, -10};
-
         g2d.setColor(Color.WHITE);
-        g2d.drawPolygon(xPoints, yPoints, 3);
+        g2d.drawPolygon(ship.getShape());
 
         g2d.setTransform(old);
+    }
+
+    private void drawAsteroids(Graphics2D g2d, List<Asteroid> asteroids){
+        for(Asteroid asteroid: asteroids){
+            AffineTransform old = g2d.getTransform();
+
+            Polygon shape = asteroid.getShape();
+
+            int xPos = (int)asteroid.getX();
+            int yPos = (int)asteroid.getY();
+            g2d.translate(xPos, yPos);
+
+            g2d.setColor(Color.WHITE);
+            g2d.drawPolygon(shape);
+
+            g2d.setTransform(old);
+        }
+    }
+
+    private void drawBullet(Graphics2D g2d, List<Bullet> bullets){
+        for(Bullet bullet: bullets){
+            AffineTransform old = g2d.getTransform();
+
+            Polygon shape = bullet.getShape();
+
+            int xPos = (int)bullet.getX();
+            int yPos = (int)bullet.getY();
+            g2d.translate(xPos, yPos);
+
+            g2d.setColor(Color.BLUE);
+            g2d.drawPolygon(shape);
+
+            g2d.setTransform(old);
+        }
     }
 }

@@ -1,12 +1,11 @@
 package com.labs.game.controller;
 
-import com.labs.game.model.Ship;
+import com.labs.game.model.entities.Ship;
 import com.labs.game.service.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
-import java.util.Iterator;
 
 public class ShipController extends Observable implements KeyListener {
     private final HashSet<Integer> pressedKeys = new HashSet<>();
@@ -35,6 +34,9 @@ public class ShipController extends Observable implements KeyListener {
         }
         if(pressedKeys.contains(KeyEvent.VK_D)){
             ship.rotateRight();
+        }
+        if(pressedKeys.contains(KeyEvent.VK_SPACE)){
+            ship.fire();
         }
     }
 }

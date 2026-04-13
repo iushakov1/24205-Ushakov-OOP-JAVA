@@ -1,6 +1,4 @@
-package com.labs.game.model;
-
-import java.util.Vector;
+package com.labs.game.model.entities;
 
 public abstract class GameEntity {
     double x;
@@ -9,12 +7,16 @@ public abstract class GameEntity {
     double ySpeed;
     double rotationAngle;
     double radius;
+    boolean destroyed;
 
     public void update(int width, int height){
+        if(destroyed){
+            return;
+        }
         x += xSpeed;
-        xSpeed*=0.97;
+        xSpeed*=0.99;
         y += ySpeed;
-        ySpeed*=0.97;
+        ySpeed*=0.99;
 
         if (x < 0){
             x = width;
@@ -35,5 +37,17 @@ public abstract class GameEntity {
     }
     public double getY(){
         return this.y;
+    }
+    public boolean isDestroyed(){
+        return this.destroyed;
+    }
+    abstract void damaged();
+
+    public boolean isColliding(GameEntity other) {
+        double dx = this.x - other.x;
+        double dy = this.y - other.y;
+        double distanceSq = dx * dx + dy * dy;
+        double radiusSum = this.radius + other.radius;
+        return distanceSq < (radiusSum * radiusSum);
     }
 }

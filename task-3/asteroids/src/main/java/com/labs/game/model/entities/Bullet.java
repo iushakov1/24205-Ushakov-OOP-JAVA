@@ -6,8 +6,10 @@ public class Bullet extends GameEntity{
     private Polygon shape;
 
     public Bullet(Ship ship){
-        int bulletSpeed = 6;
+        int bulletSpeed = 8;
         this.radius = 2;
+        this.xSpeed = ship.xSpeed;
+        this.ySpeed = ship.ySpeed;
 
         shape = generateShape();
 
@@ -25,9 +27,9 @@ public class Bullet extends GameEntity{
     @Override
     public void update(int width, int height){
         x += xSpeed;
-        xSpeed*=0.98;
+        xSpeed*=0.985;
         y += ySpeed;
-        ySpeed*=0.98;
+        ySpeed*=0.985;
 
         if (x < 0){
             x = width;
