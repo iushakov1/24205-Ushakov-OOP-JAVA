@@ -16,6 +16,7 @@ public class Asteroid extends GameEntity{
         this.radius = radius;
         this.shape = generateShape(radius, 8);
         this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+        this.setGhost(50);
     }
 
     private Polygon generateShape(double radius, int points){
@@ -41,6 +42,8 @@ public class Asteroid extends GameEntity{
         double dnSpeedLimit = 0.1;
 
         double currentSpeed = Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed);
+
+        this.updateGhostForm();
 
         xSpeed += (Math.random() - 0.5) * 0.05;
         ySpeed += (Math.random() - 0.5) * 0.05;
@@ -76,6 +79,9 @@ public class Asteroid extends GameEntity{
 
     @Override
     public void damaged(){
+        if(this.isGhost()){
+            return;
+        }
         --level;
         if(level == 0){
             destroyed = true;

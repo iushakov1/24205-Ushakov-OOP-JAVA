@@ -17,6 +17,7 @@ public class GamePanel extends JPanel implements ActionListener {
         this.model = model;
         this.setPreferredSize(new Dimension(width, height));
         setBackground(Color.BLACK);
+        this.addComponentListener(new GamePanelAdapter(model));
     }
 
     @Override
@@ -45,7 +46,20 @@ public class GamePanel extends JPanel implements ActionListener {
         g2d.translate((int)ship.getX(), (int)ship.getY());
         g2d.rotate(ship.getAngleRadians());
 
-        g2d.setColor(Color.WHITE);
+        if(ship.isGhost()){
+            boolean isVisible =  System.currentTimeMillis()%2 == 0;
+            if(!isVisible){
+                g2d.setTransform(old);
+                return;
+            }
+            else{
+                g2d.setColor(Color.GRAY);
+            }
+        }
+        else{
+            g2d.setColor(Color.WHITE);
+        }
+
         g2d.drawPolygon(ship.getShape());
 
         g2d.setTransform(old);
@@ -61,7 +75,19 @@ public class GamePanel extends JPanel implements ActionListener {
             int yPos = (int)asteroid.getY();
             g2d.translate(xPos, yPos);
 
-            g2d.setColor(Color.WHITE);
+            if(asteroid.isGhost()){
+                boolean isVisible =  System.currentTimeMillis()%2 == 0;
+                if(!isVisible){
+                    g2d.setTransform(old);
+                    continue;
+                }
+                else{
+                    g2d.setColor(Color.GRAY);
+                }
+            }
+            else{
+                g2d.setColor(Color.WHITE);
+            }
             g2d.drawPolygon(shape);
 
             g2d.setTransform(old);
@@ -83,5 +109,9 @@ public class GamePanel extends JPanel implements ActionListener {
 
             g2d.setTransform(old);
         }
+    }
+
+    private void drawGhost(){
+
     }
 }

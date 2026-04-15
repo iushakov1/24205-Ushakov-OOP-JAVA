@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameModel extends Observable {
-    private final int width;
-    private final int height;
+    private int width;
+    private int height;
     private ModelStatus status = ModelStatus.MENU;
 
     private Ship ship;
@@ -44,8 +44,7 @@ public class GameModel extends Observable {
             case STARTNEWGAME:
             {
                 ship = new Ship(width/2, height/2);
-                asteroids.add(new Asteroid(width/2, height/4, 20));
-                asteroids.add(new Asteroid(width/2, height/8, 20));
+
                 this.changeStatus(ModelStatus.PLAYING);
                 this.notify(new StatusChangeEvent());
                 break;
@@ -108,8 +107,7 @@ public class GameModel extends Observable {
                 }
 
                 if(asteroids.isEmpty()){
-                    this.status = ModelStatus.GAMEOVER;
-                    this.notify(new StatusChangeEvent());
+                    this.generateAsteroids();
                 }
                 this.notify(new RepaintEvent());
                 break;
@@ -146,5 +144,20 @@ public class GameModel extends Observable {
 
     public void changeStatus(ModelStatus newStatus){
         this.status = newStatus;
+    }
+
+    public void updateBounds(int newWidth, int newHeight){
+        this.width = newWidth;
+        this.height = newHeight;
+    }
+
+    private void generateAsteroids(){
+        int numOfAsteroids = (int)(Math.random()*10);
+        for(int i = 0; i < numOfAsteroids; ++i){
+            double x = Math.random()*width;
+            double y = Math.random()*height;
+            double r = 6 + Math.random()*10;
+            this.asteroids.add(new Asteroid(x, y, r));
+        }
     }
 }

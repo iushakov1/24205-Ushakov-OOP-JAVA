@@ -29,6 +29,10 @@ public class GameFrame extends JFrame implements Observer {
 
         mainContainer.add(menuPanel, MENU_KEY);
         mainContainer.add(gamePanel, GAME_KEY);
+        mainContainer.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.DARK_GRAY, 5),
+                BorderFactory.createLineBorder(Color.WHITE, 2)
+        ));
 
         this.add(mainContainer);
 

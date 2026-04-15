@@ -17,6 +17,7 @@ public class Ship extends GameEntity {
         this.xSpeed = 0;
         this.rotationAngle = 0;
         this.shape = generateShape();
+        this.setGhost(30);
     }
 
     @Override
@@ -28,6 +29,8 @@ public class Ship extends GameEntity {
         if(this.cooldownTimer > 0){
             --this.cooldownTimer;
         }
+        this.updateGhostForm();
+
         x += xSpeed;
         xSpeed*=0.99;
         y += ySpeed;
