@@ -1,6 +1,6 @@
 package com.labs.game.model;
 
-import com.labs.game.controller.MenuController;
+import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.event.RepaintEvent;
 import com.labs.game.event.StatusChangeEvent;
 import com.labs.game.model.entities.Asteroid;
@@ -8,8 +8,6 @@ import com.labs.game.model.entities.Bullet;
 import com.labs.game.model.entities.Ship;
 import com.labs.game.service.Observable;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -17,20 +15,17 @@ public class GameModel extends Observable {
     private int width;
     private int height;
     private ModelStatus status = ModelStatus.MENU;
+    private Record record;
 
     private Ship ship;
     private List<Bullet> bullets = new CopyOnWriteArrayList<>();
     private List<Asteroid> asteroids = new CopyOnWriteArrayList<>();
 
     public GameModel(int width, int height){
+        this.record = new Record();
         this.width = width;
         this.height = height;
         this.status = ModelStatus.MENU;
-    }
-
-    public void initModel(){
-
-
     }
 
     public void update(){
@@ -67,9 +62,43 @@ public class GameModel extends Observable {
                     for(Asteroid a: asteroids){
                         if(b.isColliding(a)){
                             a.damaged();
-                            if(a.isDestroyed()){
-                                asteroids.remove(a);
+                            switch(a.getLevel()){
+                                case 2:{
+                                    double distribution = Math.random();
+                                    double distribution1 = Math.random()*(1-distribution);
+
+                                    double r1Scale = distribution;
+                                    double r2Scale = (1-distribution)*distribution1;
+                                    double r3Scale = 1 - ((1-distribution)*distribution1);
+
+                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale));
+                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale));
+                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r3Scale));
+
+                                    asteroids.remove(a);
+                                    break;
+                                }
+                                case 1:{
+                                    double distribution = Math.random();
+
+                                    double r1Scale = distribution;
+                                    double r2Scale = 1 - distribution;
+
+                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale));
+                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale));
+
+                                    asteroids.remove(a);
+                                    break;
+                                }
+                                case 0:{
+                                    asteroids.remove(a);
+                                    break;
+                                }
                             }
+
+                            record.update(a.getPrice());
+                            this.notify(new RecordUpdateEvent());
+
                             b.damaged();
                             bullets.remove(b);
                         }
@@ -91,8 +120,18 @@ public class GameModel extends Observable {
                             continue;
                         }
                         if(a.isColliding(other)){
-                            a.damaged();
-                            other.damaged();
+
+                            if(a.getRadius() > other.getRadius()){
+                                other.damaged();
+                            }
+                            else if(a.getRadius() < other.getRadius()){
+                                a.damaged();
+                            }
+                            else{
+                                a.damaged();
+                                other.damaged();
+                            }
+
                         }
                     }
 
@@ -118,6 +157,7 @@ public class GameModel extends Observable {
             case GAMEOVER: {
                 this.status = ModelStatus.MENU;
                 this.notify(new StatusChangeEvent());
+                this.record.resetCurScore();
                 return;
             }
         }
@@ -152,12 +192,22 @@ public class GameModel extends Observable {
     }
 
     private void generateAsteroids(){
-        int numOfAsteroids = (int)(Math.random()*10);
+        int numOfAsteroids = (int)(Math.random()*3);
         for(int i = 0; i < numOfAsteroids; ++i){
             double x = Math.random()*width;
             double y = Math.random()*height;
-            double r = 6 + Math.random()*10;
+            double r = 8 + Math.random()*40;
             this.asteroids.add(new Asteroid(x, y, r));
         }
+    }
+
+    public double getWidth(){
+        return this.width;
+    }
+    public double getHeight(){
+        return this.height;
+    }
+    public Record getRecord(){
+        return this.record;
     }
 }

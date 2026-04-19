@@ -5,7 +5,6 @@ import java.awt.*;
 
 public class Ship extends GameEntity {
     private double thrustPower = 0.3;
-    private Polygon shape;
     private boolean openFire;
     private int shootCooldown = 30;
     private int cooldownTimer = 0;
@@ -17,6 +16,7 @@ public class Ship extends GameEntity {
         this.xSpeed = 0;
         this.rotationAngle = 0;
         this.shape = generateShape();
+        this.radius = this.getMaxRadius();
         this.setGhost(30);
     }
 
@@ -85,19 +85,12 @@ public class Ship extends GameEntity {
         return rotationAngle;
     }
 
-    public double getAngleRadians(){
-        return Math.toRadians(this.rotationAngle);
-    }
 
     private Polygon generateShape(){
         int[] xPoints = {15, -10, -10};
         int[] yPoints = {0, 10, -10};
         int nDots = 3;
         return new Polygon(xPoints, yPoints, nDots);
-    }
-
-    public Polygon getShape(){
-        return this.shape;
     }
 
     @Override

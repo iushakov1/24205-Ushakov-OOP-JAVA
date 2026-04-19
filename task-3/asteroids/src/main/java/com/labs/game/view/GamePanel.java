@@ -1,23 +1,32 @@
 package com.labs.game.view;
 
+import com.labs.game.event.Event;
+import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.model.GameModel;
 import com.labs.game.model.entities.*;
+import com.labs.game.service.Observer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
 import java.util.List;
 
-public class GamePanel extends JPanel implements ActionListener {
+public class GamePanel extends JPanel implements ActionListener, ComponentListener {
     private GameModel model;
+    private int width;
+    private int height;
 
     public GamePanel(GameModel model, int width, int height){
         this.model = model;
+        this.width = width;
+        this.height = height;
         this.setPreferredSize(new Dimension(width, height));
+        this.addComponentListener(this);
         setBackground(Color.BLACK);
-        this.addComponentListener(new GamePanelAdapter(model));
     }
 
     @Override
@@ -26,6 +35,12 @@ public class GamePanel extends JPanel implements ActionListener {
 
         Graphics2D g2d = (Graphics2D) g;
 
+
+        double scaleX = (double) this.width / this.model.getWidth();
+        double scaleY = (double) this.height / this.model.getHeight();
+
+        g2d.scale(scaleX, scaleY);
+
         render(g2d);
     }
 
@@ -33,6 +48,7 @@ public class GamePanel extends JPanel implements ActionListener {
         drawShip(g2d, model.getShip());
         drawAsteroids(g2d, model.getAsteroids());
         drawBullet(g2d, model.getBullets());
+        drawRecordBar(g2d);
     }
 
     @Override
@@ -111,7 +127,39 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
 
-    private void drawGhost(){
+    private void drawRecordBar(Graphics2D g2d){
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+
+        String curScoreText = "Score: " + model.getRecord().getCurScore();
+        String maxScoreText = "Best: " + model.getRecord().getMaxScore();
+
+        FontMetrics fm = g2d.getFontMetrics();
+        int maxScoreWidth = fm.stringWidth(maxScoreText);
+
+        g2d.drawString(curScoreText, 20, 30);
+        g2d.drawString(maxScoreText, (int) (this.model.getWidth() - maxScoreWidth-10), 30);
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        this.width = this.getWidth();
+        this.height = this.getHeight();
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
 
     }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
+    }
+
 }

@@ -8,15 +8,17 @@ public class Asteroid extends GameEntity{
     private Polygon shape;
 
     public Asteroid(double x, double y, double radius){
-        this.level = 1;
+        this.destroyed = (radius < 6);
         this.xSpeed = Math.random()+0.1;
         this.ySpeed = Math.random()+0.1;
         this.x = x;
         this.y = y;
         this.radius = radius;
+        this.setLevel();
         this.shape = generateShape(radius, 8);
         this.rotationSpeed = (Math.random() - 0.5) * 0.1;
-        this.setGhost(50);
+        this.setGhost(70 * (4 - level));
+        this.price = 10*level;
     }
 
     private Polygon generateShape(double radius, int points){
@@ -83,8 +85,27 @@ public class Asteroid extends GameEntity{
             return;
         }
         --level;
-        if(level == 0){
-            destroyed = true;
+        this.destroyed = true;
+
+    }
+
+    public int getLevel(){
+        return this.level;
+    }
+
+    private void setLevel(){
+        if(radius >= 30){
+            this.level = 3;
+        }
+        else if(15 <= radius){
+            this.level = 2;
+        }
+        else if(0 < radius){
+            this.level = 1;
+        }
+        else{
+            this.level = 0;
+            this.destroyed=true;
         }
     }
 }

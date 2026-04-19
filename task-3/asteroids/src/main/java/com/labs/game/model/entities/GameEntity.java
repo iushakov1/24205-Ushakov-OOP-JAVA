@@ -1,5 +1,9 @@
 package com.labs.game.model.entities;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+
 public abstract class GameEntity {
     double x;
     double y;
@@ -10,6 +14,8 @@ public abstract class GameEntity {
     boolean destroyed;
     boolean ghostForm;
     int ghostFormTimer;
+    protected Polygon shape;
+    protected int price = 0;
 
     public void update(int width, int height){
         if(destroyed){
@@ -54,7 +60,38 @@ public abstract class GameEntity {
         double dy = this.y - other.y;
         double distanceSq = dx * dx + dy * dy;
         double radiusSum = this.radius + other.radius;
-        return distanceSq < (radiusSum * radiusSum);
+
+        if(distanceSq < (radiusSum * radiusSum)){
+            return this.isCollidingByPixel(other);
+        }
+
+        return false;
+    }
+
+    private boolean isCollidingByPixel(GameEntity other){
+        if(this.isGhost() || other.isGhost()){
+            return false;
+        }
+        Area area1 = new Area(this.getTransformedShape());
+        Area area2 = new Area(other.getTransformedShape());
+
+        area1.intersect(area2);
+        return !(area1.isEmpty());
+    }
+
+    public double getAngleRadians(){
+        return Math.toRadians(this.rotationAngle);
+    }
+
+    private Shape getTransformedShape(){
+        AffineTransform at = new AffineTransform();
+        at.translate(this.x, this.y);
+        at.rotate(this.getAngleRadians());
+        return at.createTransformedShape(getShape());
+    }
+
+    public Polygon getShape(){
+        return this.shape;
     }
 
     public void setGhost(int time){
@@ -76,4 +113,32 @@ public abstract class GameEntity {
         }
     }
 
+    protected double getMaxRadius(){
+        double sumX = 0, sumY = 0;
+        for (int i = 0; i < this.shape.npoints; i++) {
+            sumX +=  this.shape.xpoints[i];
+            sumY +=  this.shape.ypoints[i];
+        }
+        double centerX = sumX /  this.shape.npoints;
+        double centerY = sumY /  this.shape.npoints;
+
+        double maxDistSq = 0;
+        for (int i = 0; i < this.shape.npoints; i++) {
+            double xShifted = this.shape.xpoints[i] - centerX;
+            double yShifted = this.shape.ypoints[i] - centerY;
+            double distSq = xShifted * xShifted + yShifted * yShifted;
+            if (distSq > maxDistSq) {
+                maxDistSq = distSq;
+            }
+        }
+        return Math.sqrt(maxDistSq);
+    }
+
+    public int getPrice(){
+        return this.price;
+    }
+
+    public double getRadius(){
+        return this.radius;
+    }
 }
