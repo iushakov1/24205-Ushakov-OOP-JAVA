@@ -55,7 +55,7 @@ public class GameFrame extends JFrame implements Observer {
     public void update(){
         ModelStatus currentStatus = model.getStatus();
 
-        if(this.model.getStatus() == ModelStatus.PLAYING){
+        if(this.model.getStatus() == ModelStatus.PLAYING || this.model.getStatus() == ModelStatus.GAMEOVER){
             cardLayout.show(mainContainer, GAME_KEY);
             this.gamePanel.repaint();
         }

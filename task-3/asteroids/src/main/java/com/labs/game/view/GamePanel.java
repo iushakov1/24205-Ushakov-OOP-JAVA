@@ -3,6 +3,7 @@ package com.labs.game.view;
 import com.labs.game.event.Event;
 import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.model.GameModel;
+import com.labs.game.model.ModelStatus;
 import com.labs.game.model.entities.*;
 import com.labs.game.service.Observer;
 
@@ -49,6 +50,9 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
         drawAsteroids(g2d, model.getAsteroids());
         drawBullet(g2d, model.getBullets());
         drawRecordBar(g2d);
+        if(this.model.getStatus() == ModelStatus.GAMEOVER){
+
+        }
     }
 
     @Override
@@ -61,6 +65,10 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
 
         g2d.translate((int)ship.getX(), (int)ship.getY());
         g2d.rotate(ship.getAngleRadians());
+
+        if(ship.isThrusting()){
+            drawThruster(g2d, ship);
+        }
 
         if(ship.isGhost()){
             boolean isVisible =  System.currentTimeMillis()%2 == 0;
@@ -79,6 +87,34 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
         g2d.drawPolygon(ship.getShape());
 
         g2d.setTransform(old);
+    }
+
+    private void drawThruster(Graphics2D g2d, Ship ship){
+        int shipSize = (int) ship.getRadius();
+
+        Polygon flameShape = new Polygon();
+
+        flameShape.addPoint(-shipSize - 5, 0);
+        flameShape.addPoint(-shipSize + 2, shipSize/2);
+        flameShape.addPoint(-shipSize + 2, -shipSize/2);
+
+        boolean flicker = System.currentTimeMillis()%2==0;
+        if(flicker){
+            g2d.setColor(Color.GRAY);
+        }
+        else{
+            g2d.setColor(Color.WHITE);
+        }
+
+        g2d.fillPolygon(flameShape);
+
+        if(flicker){
+            g2d.setColor(Color.GRAY);
+        }
+        else{
+            g2d.setColor(Color.WHITE);
+        }
+        g2d.drawPolygon(flameShape);
     }
 
     private void drawAsteroids(Graphics2D g2d, List<Asteroid> asteroids){

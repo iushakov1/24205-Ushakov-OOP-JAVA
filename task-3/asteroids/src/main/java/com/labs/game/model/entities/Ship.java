@@ -8,6 +8,8 @@ public class Ship extends GameEntity {
     private boolean openFire;
     private int shootCooldown = 30;
     private int cooldownTimer = 0;
+    private boolean thrusting;
+    private int healthPoint;
 
     public Ship(int x, int y){
         this.x = x;
@@ -18,6 +20,7 @@ public class Ship extends GameEntity {
         this.shape = generateShape();
         this.radius = this.getMaxRadius();
         this.setGhost(30);
+        this.healthPoint = 3;
     }
 
     @Override
@@ -95,7 +98,13 @@ public class Ship extends GameEntity {
 
     @Override
     public void damaged() {
-        destroyed = true;
+        --this.healthPoint;
+        if(healthPoint <= 0){
+            this.destroyed = true;
+        }
+        else{
+            this.setGhost(40);
+        }
     }
 
     public boolean isFiring(){
@@ -111,5 +120,24 @@ public class Ship extends GameEntity {
     }
     public void resetCooldown(){
         cooldownTimer = shootCooldown;
+    }
+    public boolean isThrusting(){
+        return this.thrusting;
+    }
+    public void setThrusting(boolean v){
+        this.thrusting = v;
+    }
+
+    public void setCoord(double x, double y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setHealthPoint(int hp){
+        this.healthPoint = hp;
+    }
+
+    public void setDestroyed(boolean v){
+        this.destroyed = v;
     }
 }

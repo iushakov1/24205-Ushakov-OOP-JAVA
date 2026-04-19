@@ -8,6 +8,10 @@ import java.awt.event.KeyListener;
 import java.util.HashSet;
 
 public class ShipController extends Observable implements KeyListener {
+    private Ship ship;
+    public ShipController(Ship ship){
+        this.ship = ship;
+    }
     private final HashSet<Integer> pressedKeys = new HashSet<>();
     @Override
     public void keyTyped(KeyEvent e) {
@@ -21,13 +25,17 @@ public class ShipController extends Observable implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if(e.getExtendedKeyCode() == KeyEvent.VK_W){
+            ship.setThrusting(false);
+        }
         pressedKeys.remove(e.getExtendedKeyCode());
     }
 
-    public void handleInput(Ship ship){
+    public void handleInput(){
 
         if(pressedKeys.contains(KeyEvent.VK_W)){
             ship.thrust();
+            ship.setThrusting(true);
         }
         if(pressedKeys.contains(KeyEvent.VK_A)){
             ship.rotateLeft();

@@ -17,6 +17,7 @@ public class GameModel extends Observable {
     private ModelStatus status = ModelStatus.MENU;
     private Record record;
 
+
     private Ship ship;
     private List<Bullet> bullets = new CopyOnWriteArrayList<>();
     private List<Asteroid> asteroids = new CopyOnWriteArrayList<>();
@@ -26,19 +27,19 @@ public class GameModel extends Observable {
         this.width = width;
         this.height = height;
         this.status = ModelStatus.MENU;
+        this.ship = new Ship(width/2, height/2);
     }
 
     public void update(){
         switch (this.status){
             case MENU:
             {
-                this.notify(new RepaintEvent());
+                //this.notify(new RepaintEvent());
                 break;
             }
 
             case STARTNEWGAME:
             {
-                ship = new Ship(width/2, height/2);
 
                 this.changeStatus(ModelStatus.PLAYING);
                 this.notify(new StatusChangeEvent());
@@ -148,17 +149,21 @@ public class GameModel extends Observable {
                 if(asteroids.isEmpty()){
                     this.generateAsteroids();
                 }
-                this.notify(new RepaintEvent());
+                //this.notify(new RepaintEvent());
                 break;
             }
             case PAUSED: {
                 break;
             }
             case GAMEOVER: {
-                this.status = ModelStatus.MENU;
-                this.notify(new StatusChangeEvent());
+                this.asteroids.clear();
+                this.ship.setCoord((double) this.width /2, (double) this.height /2);
+                this.ship.setHealthPoint(3);
+                this.ship.setDestroyed(false);
+                //this.status = ModelStatus.MENU;
+                //this.notify(new StatusChangeEvent());
                 this.record.resetCurScore();
-                return;
+                break;
             }
         }
 
@@ -192,7 +197,7 @@ public class GameModel extends Observable {
     }
 
     private void generateAsteroids(){
-        int numOfAsteroids = (int)(Math.random()*3);
+        int numOfAsteroids = (int)(Math.random()*6);
         for(int i = 0; i < numOfAsteroids; ++i){
             double x = Math.random()*width;
             double y = Math.random()*height;
