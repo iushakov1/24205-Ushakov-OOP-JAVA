@@ -34,12 +34,16 @@ public class GameModel extends Observable {
         switch (this.status){
             case MENU:
             {
-                //this.notify(new RepaintEvent());
+                this.notify(new RepaintEvent());
                 break;
             }
 
             case STARTNEWGAME:
             {
+                this.asteroids.clear();
+                this.ship.setCoord((double) width /2, (double) height /2);
+                this.ship.reset();
+                this.record.resetCurScore();
 
                 this.changeStatus(ModelStatus.PLAYING);
                 this.notify(new StatusChangeEvent());
@@ -111,12 +115,12 @@ public class GameModel extends Observable {
                 for(Asteroid a: asteroids){
 
                     if(a.isColliding(ship)){
-                        ship.damaged();
+                        //ship.damaged();
                     }
 
                     a.update(this.width, this.height);
 
-                    for(Asteroid other: asteroids){
+                    /*for(Asteroid other: asteroids){
                         if(a.equals(other)){
                             continue;
                         }
@@ -134,7 +138,7 @@ public class GameModel extends Observable {
                             }
 
                         }
-                    }
+                    }*/
 
                     if(a.isDestroyed()){
                         asteroids.remove(a);
@@ -149,20 +153,17 @@ public class GameModel extends Observable {
                 if(asteroids.isEmpty()){
                     this.generateAsteroids();
                 }
-                //this.notify(new RepaintEvent());
+                this.notify(new RepaintEvent());
                 break;
             }
             case PAUSED: {
                 break;
             }
             case GAMEOVER: {
-                this.asteroids.clear();
-                this.ship.setCoord((double) this.width /2, (double) this.height /2);
-                this.ship.setHealthPoint(3);
-                this.ship.setDestroyed(false);
+
                 //this.status = ModelStatus.MENU;
                 //this.notify(new StatusChangeEvent());
-                this.record.resetCurScore();
+
                 break;
             }
         }
@@ -215,4 +216,6 @@ public class GameModel extends Observable {
     public Record getRecord(){
         return this.record;
     }
+
+
 }

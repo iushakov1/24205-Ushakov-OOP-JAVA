@@ -21,13 +21,24 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     private int width;
     private int height;
 
+    private final Font scoreFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
+    private final Color bulletColor = Color.BLUE;
+    private final Color overlayColor = new Color(0, 0, 0, 100);
+    private final Polygon flameShape = new Polygon();
+
     public GamePanel(GameModel model, int width, int height){
+        this.setDoubleBuffered(true);
         this.model = model;
         this.width = width;
         this.height = height;
         this.setPreferredSize(new Dimension(width, height));
         this.addComponentListener(this);
         setBackground(Color.BLACK);
+
+        int shipSize = (int) model.getShip().getRadius();
+        flameShape.addPoint(-shipSize - 5, 0);
+        flameShape.addPoint(-shipSize + 2, shipSize/2);
+        flameShape.addPoint(-shipSize + 2, -shipSize/2);
     }
 
     @Override
@@ -51,6 +62,8 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
         drawBullet(g2d, model.getBullets());
         drawRecordBar(g2d);
         if(this.model.getStatus() == ModelStatus.GAMEOVER){
+            g2d.setColor(new Color(0, 0, 0, 100));
+            g2d.fillRect(0, 0, (int)model.getWidth(), (int)model.getHeight());
 
         }
     }
@@ -90,14 +103,6 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     }
 
     private void drawThruster(Graphics2D g2d, Ship ship){
-        int shipSize = (int) ship.getRadius();
-
-        Polygon flameShape = new Polygon();
-
-        flameShape.addPoint(-shipSize - 5, 0);
-        flameShape.addPoint(-shipSize + 2, shipSize/2);
-        flameShape.addPoint(-shipSize + 2, -shipSize/2);
-
         boolean flicker = System.currentTimeMillis()%2==0;
         if(flicker){
             g2d.setColor(Color.GRAY);
@@ -165,7 +170,7 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
 
     private void drawRecordBar(Graphics2D g2d){
         g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));
+        g2d.setFont(scoreFont);
 
         String curScoreText = "Score: " + model.getRecord().getCurScore();
         String maxScoreText = "Best: " + model.getRecord().getMaxScore();

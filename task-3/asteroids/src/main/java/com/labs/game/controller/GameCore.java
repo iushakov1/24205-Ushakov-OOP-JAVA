@@ -12,7 +12,7 @@ public class GameCore {
     private GameFrame frame;
     private ShipController shipController;
     private MenuController menuController;
-    //private Timer timer;
+    private Timer timer;
 
     private Timer physicTimer;
     private Timer renderTimer;
@@ -23,10 +23,9 @@ public class GameCore {
 
         frame = new GameFrame(model, shipController, width, height);
         menuController = new MenuController(model, frame.getMenuPanel());
-        //timer = new Timer(10, e -> {gameTick();});
+        timer = new Timer(20, e -> {gameTick();});
 
-        physicTimer = new Timer(20, e->gameTick());
-        renderTimer = new Timer(1, e->frame.update());
+
 
     }
 
@@ -49,8 +48,6 @@ public class GameCore {
     }
 
     public void start(){
-        //timer.start();
-        physicTimer.start();
-        renderTimer.start();
+        timer.start();
     }
 }

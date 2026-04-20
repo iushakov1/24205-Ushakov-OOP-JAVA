@@ -12,40 +12,47 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GameFrame extends JFrame implements Observer {
-    private final CardLayout cardLayout = new CardLayout();
-    private final JPanel mainContainer = new JPanel(cardLayout);
-
+    private JLayeredPane layeredPane = new JLayeredPane();
     GamePanel gamePanel;
     MenuPanel menuPanel;
     GameModel model;
-
+    ModelStatus lastStatus;
 
     private static final String MENU_KEY = "MENU";
     private static final String GAME_KEY = "GAME";
     public GameFrame(GameModel model, ShipController shipController, int width, int height){
         this.model = model;
+
         model.addObserver(this);
         this.menuPanel = new MenuPanel(model,width, height);
         this.gamePanel = new GamePanel(model, width, height);
 
-        mainContainer.add(menuPanel, MENU_KEY);
-        mainContainer.add(gamePanel, GAME_KEY);
-        mainContainer.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.DARK_GRAY, 5),
-                BorderFactory.createLineBorder(Color.WHITE, 2)
-        ));
+        this.gamePanel.setBounds(0, 0, width, height);
+        this.menuPanel.setBounds(0, 0, width, height);
 
-        this.add(mainContainer);
+        this.layeredPane.setPreferredSize(new Dimension(width, height));
+        this.gamePanel.setBounds(0, 0, width, height);
+        this.menuPanel.setBounds(0, 0, width, height);
+
+        this.layeredPane.add(gamePanel, JLayeredPane.DEFAULT_LAYER);
+        this.layeredPane.add(menuPanel, JLayeredPane.PALETTE_LAYER);
+
+        this.add(layeredPane);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.addKeyListener(shipController);
+        this.gamePanel.addKeyListener(shipController);
+        this.gamePanel.setFocusable(true);
+
+        this.addComponentListener(new GameFrameAdapter(this));
 
         this.setFocusable(true);
         this.requestFocusInWindow();
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+
+        update();
     }
 
     public GamePanel getGamePanel(){
@@ -53,30 +60,45 @@ public class GameFrame extends JFrame implements Observer {
     }
 
     public void update(){
-        ModelStatus currentStatus = model.getStatus();
-
-        if(this.model.getStatus() == ModelStatus.PLAYING || this.model.getStatus() == ModelStatus.GAMEOVER){
-            cardLayout.show(mainContainer, GAME_KEY);
-            this.gamePanel.repaint();
+        ModelStatus status = model.getStatus();
+        if(status == ModelStatus.PLAYING){
+            if(lastStatus != ModelStatus.PLAYING){
+                menuPanel.setVisible(false);
+                gamePanel.requestFocusInWindow();
+            }
+            lastStatus = ModelStatus.PLAYING;
         }
-        if(this.model.getStatus() == ModelStatus.MENU){
-            cardLayout.show(mainContainer, MENU_KEY);
-            this.menuPanel.repaint();
+        else{
+            menuPanel.setVisible(true);
+            lastStatus = ModelStatus.MENU;
         }
+        repaint();
     }
 
     @Override
     public void notify(Event event) {
-        if(event.getClass().equals(StatusChangeEvent.class)){
+        if(event instanceof StatusChangeEvent){
             this.update();
         }
-        if(event.getClass().equals(RepaintEvent.class)){
-            this.update();
+        if(event instanceof RepaintEvent){
+            gamePanel.repaint();
         }
     }
 
     public MenuPanel getMenuPanel(){
         return this.menuPanel;
+    }
+
+    public void resizeLayers() {
+        int w = layeredPane.getWidth();
+        int h = layeredPane.getHeight();
+
+        if (gamePanel.getWidth() == w && gamePanel.getHeight() == h)
+            return;
+
+        gamePanel.setBounds(0, 0, w, h);
+        menuPanel.setBounds(0, 0, w, h);
+
     }
 
 }

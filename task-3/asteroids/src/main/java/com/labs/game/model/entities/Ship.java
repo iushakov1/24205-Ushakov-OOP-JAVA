@@ -140,4 +140,13 @@ public class Ship extends GameEntity {
     public void setDestroyed(boolean v){
         this.destroyed = v;
     }
+
+    public void reset(){
+        this.xSpeed = 0;
+        this.ySpeed = 0;
+        this.destroyed = false;
+        this.setHealthPoint(3);
+        this.setGhost(20);
+    }
+
 }
