@@ -18,8 +18,6 @@ public class GameFrame extends JFrame implements Observer {
     GameModel model;
     ModelStatus lastStatus;
 
-    private static final String MENU_KEY = "MENU";
-    private static final String GAME_KEY = "GAME";
     public GameFrame(GameModel model, ShipController shipController, int width, int height){
         this.model = model;
 

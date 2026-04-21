@@ -22,7 +22,7 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     private int height;
 
     private final Font scoreFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
-    private final Font hPBarFont = new Font(Font.MONOSPACED, 1, 18);
+    private final Font hPBarFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
     private final Color bulletColor = Color.BLUE;
     private final Color overlayColor = new Color(0, 0, 0, 100);
     private final Polygon flameShape = new Polygon();

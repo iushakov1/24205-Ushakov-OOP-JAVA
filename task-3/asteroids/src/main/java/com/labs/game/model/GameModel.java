@@ -159,11 +159,7 @@ public class GameModel extends Observable {
                 this.notify(new RepaintEvent());
                 break;
             }
-            case PAUSED: {
-                break;
-            }
-            case GAMEOVER: {
-
+            case PAUSED, GAMEOVER: {
                 break;
             }
         }
