@@ -15,6 +15,7 @@ public class GameModel extends Observable {
     private int width;
     private int height;
     private ModelStatus status = ModelStatus.MENU;
+    private ModelStatus lastStatus = ModelStatus.MENU;
     private Record record;
 
 
@@ -163,9 +164,6 @@ public class GameModel extends Observable {
             }
             case GAMEOVER: {
 
-                //this.status = ModelStatus.MENU;
-                //this.notify(new StatusChangeEvent());
-
                 break;
             }
         }
@@ -191,7 +189,12 @@ public class GameModel extends Observable {
     }
 
     public void changeStatus(ModelStatus newStatus){
+        this.lastStatus = this.status;
         this.status = newStatus;
+    }
+
+    public ModelStatus getLastStatus(){
+        return this.lastStatus;
     }
 
     public void updateBounds(int newWidth, int newHeight){

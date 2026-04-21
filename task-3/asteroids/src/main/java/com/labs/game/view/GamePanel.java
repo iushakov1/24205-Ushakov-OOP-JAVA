@@ -58,13 +58,12 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     }
 
     private void render(Graphics2D g2d){
-        if(this.model.getStatus() == ModelStatus.PLAYING){
-            drawShip(g2d, model.getShip());
-            drawAsteroids(g2d, model.getAsteroids());
-            drawBullet(g2d, model.getBullets());
-            drawRecordBar(g2d);
-            drawHPBar(g2d);
-        }
+        drawShip(g2d, model.getShip());
+        drawAsteroids(g2d, model.getAsteroids());
+        drawBullet(g2d, model.getBullets());
+        drawRecordBar(g2d);
+        drawHPBar(g2d);
+
 
         if(this.model.getStatus() == ModelStatus.GAMEOVER){
             g2d.setColor(new Color(0, 0, 0, 100));
@@ -88,7 +87,7 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
             drawThruster(g2d, ship);
         }
 
-        if(ship.isGhost()){
+        if(ship.isGhost() && this.model.getStatus() == ModelStatus.PLAYING){
             boolean isVisible =  System.currentTimeMillis()%2 == 0;
             if(!isVisible){
                 g2d.setTransform(old);

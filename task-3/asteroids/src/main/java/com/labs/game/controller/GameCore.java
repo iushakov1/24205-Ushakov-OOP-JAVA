@@ -22,8 +22,6 @@ public class GameCore {
         menuController = new MenuController(model, frame.getMenuPanel());
         timer = new Timer(20, e -> {gameTick();});
 
-
-
     }
 
     private void gameTick(){
