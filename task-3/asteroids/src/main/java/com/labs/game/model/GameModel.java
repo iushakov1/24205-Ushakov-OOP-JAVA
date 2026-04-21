@@ -116,7 +116,7 @@ public class GameModel extends Observable {
 
                 for(Asteroid a: asteroids){
 
-                    if(a.isColliding(ship) && !this.ship.isGhost()){
+                    if(a.isColliding(ship) && !this.ship.isGhost() && !a.isGhost()){
                         ship.damaged();
                     }
 

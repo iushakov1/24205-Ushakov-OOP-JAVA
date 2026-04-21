@@ -17,7 +17,7 @@ public class Asteroid extends GameEntity{
         this.setLevel();
         this.shape = generateShape(radius, 8);
         this.rotationSpeed = (Math.random() - 0.5) * 0.1;
-        this.setGhost(50 * (4 - level));
+        this.setGhost(100 * (4 - level));
         this.price = 10*level;
     }
 
