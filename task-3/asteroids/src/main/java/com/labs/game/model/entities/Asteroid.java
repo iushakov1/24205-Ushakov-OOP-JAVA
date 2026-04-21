@@ -21,6 +21,11 @@ public class Asteroid extends GameEntity{
         this.price = 10*level;
     }
 
+    public void push(Asteroid other) {
+        this.xSpeed -= other.xSpeed * other.getRadius();
+        this.ySpeed -= other.ySpeed * other.getRadius();
+    }
+
     private Polygon generateShape(double radius, int points){
         int[] xPoints = new int[points];
         int[] yPoints = new int[points];
@@ -64,6 +69,7 @@ public class Asteroid extends GameEntity{
 
         x += xSpeed;
         y += ySpeed;
+        rotationAngle += rotationSpeed;
 
         if (x < 0){
             x = width;

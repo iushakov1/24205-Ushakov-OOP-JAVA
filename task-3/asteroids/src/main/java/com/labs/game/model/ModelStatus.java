@@ -8,4 +8,5 @@ public enum ModelStatus {
     PLAYING,
     PAUSED,
     GAMEOVER,
+    EXITGAME,
 }

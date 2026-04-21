@@ -22,6 +22,7 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     private int height;
 
     private final Font scoreFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
+    private final Font hPBarFont = new Font(Font.MONOSPACED, 1, 18);
     private final Color bulletColor = Color.BLUE;
     private final Color overlayColor = new Color(0, 0, 0, 100);
     private final Polygon flameShape = new Polygon();
@@ -57,10 +58,14 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     }
 
     private void render(Graphics2D g2d){
-        drawShip(g2d, model.getShip());
-        drawAsteroids(g2d, model.getAsteroids());
-        drawBullet(g2d, model.getBullets());
-        drawRecordBar(g2d);
+        if(this.model.getStatus() == ModelStatus.PLAYING){
+            drawShip(g2d, model.getShip());
+            drawAsteroids(g2d, model.getAsteroids());
+            drawBullet(g2d, model.getBullets());
+            drawRecordBar(g2d);
+            drawHPBar(g2d);
+        }
+
         if(this.model.getStatus() == ModelStatus.GAMEOVER){
             g2d.setColor(new Color(0, 0, 0, 100));
             g2d.fillRect(0, 0, (int)model.getWidth(), (int)model.getHeight());
@@ -180,6 +185,14 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
 
         g2d.drawString(curScoreText, 20, 30);
         g2d.drawString(maxScoreText, (int) (this.model.getWidth() - maxScoreWidth-10), 30);
+    }
+
+    private void drawHPBar(Graphics2D g2d) {
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(this.hPBarFont);
+        String curHPText = "HP: " + this.model.getShip().getHealthPoint();
+        FontMetrics fm = g2d.getFontMetrics();
+        g2d.drawString(curHPText, 200, 30);
     }
 
     @Override

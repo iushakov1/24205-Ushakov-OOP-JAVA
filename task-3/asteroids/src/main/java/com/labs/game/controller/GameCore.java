@@ -14,9 +14,6 @@ public class GameCore {
     private MenuController menuController;
     private Timer timer;
 
-    private Timer physicTimer;
-    private Timer renderTimer;
-
     public GameCore(int width, int height){
         model = new GameModel(width, height);
         shipController = new ShipController(model.getShip());
@@ -42,6 +39,8 @@ public class GameCore {
 
                 break;
             }
+            case EXITGAME:
+                this.end();
         }
 
         model.update();
@@ -49,5 +48,10 @@ public class GameCore {
 
     public void start(){
         timer.start();
+    }
+
+    public void end(){
+        this.frame.dispose();
+        this.timer.stop();
     }
 }

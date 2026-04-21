@@ -53,9 +53,6 @@ public abstract class GameEntity {
     abstract void damaged();
 
     public boolean isColliding(GameEntity other) {
-        if(this.isGhost() || other.isGhost()){
-            return false;
-        }
         double dx = this.x - other.x;
         double dy = this.y - other.y;
         double distanceSq = dx * dx + dy * dy;
@@ -69,9 +66,6 @@ public abstract class GameEntity {
     }
 
     private boolean isCollidingByPixel(GameEntity other){
-        if(this.isGhost() || other.isGhost()){
-            return false;
-        }
         Area area1 = new Area(this.getTransformedShape());
         Area area2 = new Area(other.getTransformedShape());
 

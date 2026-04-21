@@ -41,6 +41,7 @@ public class GameModel extends Observable {
             case STARTNEWGAME:
             {
                 this.asteroids.clear();
+                this.bullets.clear();
                 this.ship.setCoord((double) width /2, (double) height /2);
                 this.ship.reset();
                 this.record.resetCurScore();
@@ -65,7 +66,7 @@ public class GameModel extends Observable {
                     }
                     b.update(width, height);
                     for(Asteroid a: asteroids){
-                        if(b.isColliding(a)){
+                        if(b.isColliding(a) && !a.isGhost()){
                             a.damaged();
                             switch(a.getLevel()){
                                 case 2:{
@@ -114,23 +115,23 @@ public class GameModel extends Observable {
 
                 for(Asteroid a: asteroids){
 
-                    if(a.isColliding(ship)){
-                        //ship.damaged();
+                    if(a.isColliding(ship) && !this.ship.isGhost()){
+                        ship.damaged();
                     }
 
                     a.update(this.width, this.height);
 
-                    /*for(Asteroid other: asteroids){
+                    for(Asteroid other: asteroids){
                         if(a.equals(other)){
                             continue;
                         }
                         if(a.isColliding(other)){
 
                             if(a.getRadius() > other.getRadius()){
-                                other.damaged();
+                                other.push(a);
                             }
                             else if(a.getRadius() < other.getRadius()){
-                                a.damaged();
+                                a.push(other);
                             }
                             else{
                                 a.damaged();
@@ -138,7 +139,7 @@ public class GameModel extends Observable {
                             }
 
                         }
-                    }*/
+                    }
 
                     if(a.isDestroyed()){
                         asteroids.remove(a);
@@ -151,6 +152,7 @@ public class GameModel extends Observable {
                 }
 
                 if(asteroids.isEmpty()){
+                    this.ship.setHealthPoint(3);
                     this.generateAsteroids();
                 }
                 this.notify(new RepaintEvent());
@@ -198,13 +200,20 @@ public class GameModel extends Observable {
     }
 
     private void generateAsteroids(){
-        int numOfAsteroids = (int)(Math.random()*6);
+        int numOfAsteroids = (int)(Math.random()*10);
         for(int i = 0; i < numOfAsteroids; ++i){
             double x = Math.random()*width;
             double y = Math.random()*height;
+            if ((this.getPointDistance(x, y, this.ship.getX(), this.ship.getY()) < this.ship.getRadius())){
+                continue;
+            }
             double r = 8 + Math.random()*40;
             this.asteroids.add(new Asteroid(x, y, r));
         }
+    }
+
+    private double getPointDistance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
     }
 
     public double getWidth(){

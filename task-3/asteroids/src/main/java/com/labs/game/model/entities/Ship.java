@@ -103,7 +103,7 @@ public class Ship extends GameEntity {
             this.destroyed = true;
         }
         else{
-            this.setGhost(40);
+            this.setGhost(80);
         }
     }
 
@@ -135,6 +135,10 @@ public class Ship extends GameEntity {
 
     public void setHealthPoint(int hp){
         this.healthPoint = hp;
+    }
+
+    public int getHealthPoint() {
+        return this.healthPoint;
     }
 
     public void setDestroyed(boolean v){

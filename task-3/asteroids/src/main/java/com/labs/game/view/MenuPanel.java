@@ -8,12 +8,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static java.awt.Font.BOLD;
+
 public class MenuPanel extends JPanel {
     private GameModel model;
     private JButton startGameButton = new JButton("Start Game");
-
+    private JButton exitButton = new JButton("Exit");
     private final Color bgColor = new Color(0, 0, 0, 150);
-    private final Font gameOverFont = new Font(Font.MONOSPACED, Font.BOLD, 50);
+    private final Font gameOverFont = new Font(Font.MONOSPACED, BOLD, 50);
 
     MenuPanel(GameModel model, int width, int height){
         this.model = model;
@@ -26,9 +28,15 @@ public class MenuPanel extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
 
         startGameButton.setBounds(width/4, height/4, width/2, height/10);
-        startGameButton.setFont(new Font("Comic Sans", Font.BOLD, width/20));
+        startGameButton.setFont(new Font("Comic Sans", BOLD, width/20));
         startGameButton.setFocusable(false);
+
+        this.exitButton.setBounds(width / 4, height / 2, width / 2, height / 10);
+        this.exitButton.setFont(new Font("MONOSPACED", BOLD, width / 20));
+        this.exitButton.setFocusable(false);
+
         this.add(startGameButton);
+        this.add(this.exitButton);
     }
 
     @Override
@@ -46,6 +54,11 @@ public class MenuPanel extends JPanel {
 
     public void setButtonListener(ActionListener listener){
         startGameButton.addActionListener(listener);
+        exitButton.addActionListener(listener);
+    }
+
+    public JButton getExitButton() {
+        return this.exitButton;
     }
 
     public JButton getStartGameButton(){
@@ -54,5 +67,6 @@ public class MenuPanel extends JPanel {
 
     public void updateBounds(int width, int height){
         startGameButton.setBounds(width/4, height/4, width/2, height/10);
+        this.exitButton.setBounds(width / 4, height / 2, width / 2, height / 10);
     }
 }
