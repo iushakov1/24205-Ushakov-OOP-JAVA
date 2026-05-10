@@ -248,8 +248,7 @@ public class GameModel extends Observable {
     }
 
     private void generateAsteroids(){
-        //int numOfAsteroids = (int)(Math.random()*10);
-        int numOfAsteroids = 1;
+        int numOfAsteroids = (int)(Math.random()*10);
         this.asteroidCount += numOfAsteroids;
         for(int i = 0; i < numOfAsteroids; ++i){
             double x = Math.random()*width;
