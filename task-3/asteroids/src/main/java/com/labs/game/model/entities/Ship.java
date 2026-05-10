@@ -4,8 +4,8 @@ package com.labs.game.model.entities;
 import java.awt.*;
 
 public class Ship extends GameEntity {
-    private double thrustPower = 0.3;
-    private boolean openFire;
+    private double thrustPower = 0.07;
+    private boolean firing;
     private int shootCooldown = 30;
     private int cooldownTimer = 0;
     private boolean thrusting;
@@ -54,7 +54,7 @@ public class Ship extends GameEntity {
     }
 
     public void thrust(){
-        int speedLimit = 4;
+        double speedLimit = 2;
 
         double radians = Math.toRadians(this.rotationAngle);
 
@@ -81,13 +81,8 @@ public class Ship extends GameEntity {
     }
 
     public void fire(){
-        openFire = true;
+        firing = true;
     }
-
-    public double getAngle(){
-        return rotationAngle;
-    }
-
 
     private Polygon generateShape(){
         int[] xPoints = {15, -10, -10};
@@ -108,8 +103,8 @@ public class Ship extends GameEntity {
     }
 
     public boolean isFiring(){
-        if(this.openFire){
-            this.openFire = false;
+        if(this.firing){
+            this.firing = false;
             return true;
         }
         return false;
@@ -118,19 +113,17 @@ public class Ship extends GameEntity {
     public boolean canShoot(){
         return cooldownTimer == 0;
     }
+
     public void resetCooldown(){
         cooldownTimer = shootCooldown;
     }
+
     public boolean isThrusting(){
         return this.thrusting;
     }
+
     public void setThrusting(boolean v){
         this.thrusting = v;
-    }
-
-    public void setCoord(double x, double y){
-        this.x = x;
-        this.y = y;
     }
 
     public void setHealthPoint(int hp){

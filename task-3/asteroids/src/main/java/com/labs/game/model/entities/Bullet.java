@@ -3,10 +3,9 @@ package com.labs.game.model.entities;
 import java.awt.*;
 
 public class Bullet extends GameEntity{
-    private Polygon shape;
 
     public Bullet(Ship ship){
-        int bulletSpeed = 8;
+        int bulletSpeed = 10;
         this.radius = 2;
         this.xSpeed = ship.xSpeed;
         this.ySpeed = ship.ySpeed;

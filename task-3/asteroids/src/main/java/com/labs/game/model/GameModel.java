@@ -3,9 +3,7 @@ package com.labs.game.model;
 import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.event.RepaintEvent;
 import com.labs.game.event.StatusChangeEvent;
-import com.labs.game.model.entities.Asteroid;
-import com.labs.game.model.entities.Bullet;
-import com.labs.game.model.entities.Ship;
+import com.labs.game.model.entities.*;
 import com.labs.game.service.Observable;
 
 import java.util.List;
@@ -17,11 +15,13 @@ public class GameModel extends Observable {
     private ModelStatus status = ModelStatus.MENU;
     private ModelStatus lastStatus = ModelStatus.MENU;
     private Record record;
+    private int asteroidCount;
+    private int gameStage = 0;
 
 
     private Ship ship;
     private List<Bullet> bullets = new CopyOnWriteArrayList<>();
-    private List<Asteroid> asteroids = new CopyOnWriteArrayList<>();
+    private List<GameEntity> entities = new CopyOnWriteArrayList<>();
 
     public GameModel(int width, int height){
         this.record = new Record();
@@ -41,12 +41,13 @@ public class GameModel extends Observable {
 
             case STARTNEWGAME:
             {
-                this.asteroids.clear();
+                this.gameStage = 0;
+                this.entities.clear();
                 this.bullets.clear();
+                this.asteroidCount = 0;
                 this.ship.setCoord((double) width /2, (double) height /2);
                 this.ship.reset();
                 this.record.resetCurScore();
-
                 this.changeStatus(ModelStatus.PLAYING);
                 this.notify(new StatusChangeEvent());
                 break;
@@ -66,45 +67,11 @@ public class GameModel extends Observable {
                         continue;
                     }
                     b.update(width, height);
-                    for(Asteroid a: asteroids){
-                        if(b.isColliding(a) && !a.isGhost()){
-                            a.damaged();
-                            switch(a.getLevel()){
-                                case 2:{
-                                    double distribution = Math.random();
-                                    double distribution1 = Math.random()*(1-distribution);
-
-                                    double r1Scale = distribution;
-                                    double r2Scale = (1-distribution)*distribution1;
-                                    double r3Scale = 1 - ((1-distribution)*distribution1);
-
-                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale));
-                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale));
-                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r3Scale));
-
-                                    asteroids.remove(a);
-                                    break;
-                                }
-                                case 1:{
-                                    double distribution = Math.random();
-
-                                    double r1Scale = distribution;
-                                    double r2Scale = 1 - distribution;
-
-                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale));
-                                    asteroids.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale));
-
-                                    asteroids.remove(a);
-                                    break;
-                                }
-                                case 0:{
-                                    asteroids.remove(a);
-                                    break;
-                                }
+                    for(GameEntity e : entities){
+                        if(b.isColliding(e) && !e.isGhost()){
+                            if(e.getClass() == Asteroid.class){
+                                this.processAsteroidCollision((Asteroid) e);
                             }
-
-                            record.update(a.getPrice());
-                            this.notify(new RecordUpdateEvent());
 
                             b.damaged();
                             bullets.remove(b);
@@ -114,36 +81,76 @@ public class GameModel extends Observable {
 
                 ship.update(this.width, this.height);
 
-                for(Asteroid a: asteroids){
+                for(GameEntity e: entities){
 
-                    if(a.isColliding(ship) && !this.ship.isGhost() && !a.isGhost()){
-                        ship.damaged();
+                    e.update(this.width, this.height);
+
+                    if(e.getClass() == Asteroid.class){
+                        Asteroid a = (Asteroid) e;
+                        if(a.isColliding(ship) && !this.ship.isGhost() && !a.isGhost()){
+                            ship.damaged();
+                        }
+                        for(GameEntity other: entities){
+
+                            if(a.equals(other)){
+                                continue;
+                            }
+
+                            if(a.isColliding(other)){
+
+                                if(other.getClass() == Asteroid.class) {
+                                    if (a.getRadius() > other.getRadius()) {
+                                        other.push(a);
+                                    } else if (a.getRadius() < other.getRadius()) {
+                                        a.push(other);
+                                    } else {
+                                        a.damaged();
+                                        other.damaged();
+                                    }
+                                }
+
+                            }
+
+                        }
+
                     }
 
-                    a.update(this.width, this.height);
+                    else if(e.getClass() == Blackhole.class && !e.isGhost()){
+                        Blackhole b = (Blackhole) e;
 
-                    for(Asteroid other: asteroids){
-                        if(a.equals(other)){
-                            continue;
+                        if(b.isColliding(ship) && !this.ship.isGhost()){
+                            ship.damaged();
                         }
-                        if(a.isColliding(other)){
 
-                            if(a.getRadius() > other.getRadius()){
-                                other.push(a);
+                        {
+                            double dist = b.getDistance(ship);
+                            if (dist <= b.getAbsorbedRadius()) {
+                                b.affect(ship, width, height);
                             }
-                            else if(a.getRadius() < other.getRadius()){
-                                a.push(other);
+                        }
+                        for(GameEntity other: entities){
+                            if(b.equals(other)){
+                                continue;
                             }
-                            else{
-                                a.damaged();
+
+                            double dist = b.getDistance(other);
+                            if(dist <= b.getAbsorbedRadius()){
+                                b.affect(other, width, height);
+                            }
+
+                            if(b.isColliding(other) && !other.isGhost()){
+                                b.addAbsorbed(other.getRadius());
                                 other.damaged();
-                            }
 
+                            }
                         }
                     }
 
-                    if(a.isDestroyed()){
-                        asteroids.remove(a);
+                    if(e.isDestroyed()){
+                        if(e.getClass() == Asteroid.class){
+                            --this.asteroidCount;
+                        }
+                        entities.remove(e);
                     }
                 }
 
@@ -152,10 +159,13 @@ public class GameModel extends Observable {
                     this.notify(new StatusChangeEvent());
                 }
 
-                if(asteroids.isEmpty()){
+                if(asteroidCount == 0){
+                    ++gameStage;
+                    this.entities.add(new Blackhole(width*Math.random(), height*Math.random(), 30 + 30*Math.random()));
                     this.ship.setHealthPoint(3);
                     this.generateAsteroids();
                 }
+
                 this.notify(new RepaintEvent());
                 break;
             }
@@ -164,16 +174,55 @@ public class GameModel extends Observable {
             }
         }
 
+    }
 
+    private void processAsteroidCollision(Asteroid a){
+        switch(a.getLevel()){
+            case 3:{
+                double distribution = Math.random();
+                double distribution1 = Math.random()*(1-distribution);
 
+                double r1Scale = distribution;
+                double r2Scale = (1-distribution)*distribution1;
+                double r3Scale = 1 - ((1-distribution)*distribution1);
+
+                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale));
+                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale));
+                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r3Scale));
+                this.asteroidCount+=3;
+                a.setDestroyed();
+                break;
+            }
+            case 2:{
+                double distribution = Math.random();
+
+                double r1Scale = distribution;
+                double r2Scale = 1 - distribution;
+
+                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale));
+                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale));
+                this.asteroidCount+=2;
+
+                a.setDestroyed();
+                break;
+            }
+            case 1:{
+                a.setDestroyed();
+                break;
+            }
+        }
+
+        record.update(a.getPrice());
+        this.notify(new RecordUpdateEvent());
     }
 
     public Ship getShip(){
         return ship;
     }
 
-    public List<Asteroid> getAsteroids(){
-        return asteroids;
+
+    public List<GameEntity> getEntities(){
+        return entities;
     }
 
     public List<Bullet> getBullets(){
@@ -200,6 +249,7 @@ public class GameModel extends Observable {
 
     private void generateAsteroids(){
         int numOfAsteroids = (int)(Math.random()*10);
+        this.asteroidCount += numOfAsteroids;
         for(int i = 0; i < numOfAsteroids; ++i){
             double x = Math.random()*width;
             double y = Math.random()*height;
@@ -207,7 +257,7 @@ public class GameModel extends Observable {
                 continue;
             }
             double r = 8 + Math.random()*40;
-            this.asteroids.add(new Asteroid(x, y, r));
+            this.entities.add(new Asteroid(x, y, r));
         }
     }
 

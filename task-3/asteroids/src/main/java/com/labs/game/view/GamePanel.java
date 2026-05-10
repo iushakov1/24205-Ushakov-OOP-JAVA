@@ -24,6 +24,7 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     private final Font scoreFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
     private final Font hPBarFont = new Font(Font.MONOSPACED, Font.BOLD, 18);
     private final Color bulletColor = Color.BLUE;
+    private final Color blackHolecolor = new Color(100, 50, 150, 150);
     private final Color overlayColor = new Color(0, 0, 0, 100);
     private final Polygon flameShape = new Polygon();
 
@@ -58,11 +59,12 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     }
 
     private void render(Graphics2D g2d){
-        drawShip(g2d, model.getShip());
-        drawAsteroids(g2d, model.getAsteroids());
-        drawBullet(g2d, model.getBullets());
         drawRecordBar(g2d);
         drawHPBar(g2d);
+        drawShip(g2d, model.getShip());
+        drawEntities(g2d, model.getEntities());
+        drawBullet(g2d, model.getBullets());
+
 
 
         if(this.model.getStatus() == ModelStatus.GAMEOVER){
@@ -106,6 +108,50 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
         g2d.setTransform(old);
     }
 
+    private void drawEntities(Graphics2D g2d, List<GameEntity> entities){
+        for(GameEntity e: entities){
+            if(e.getClass() == Asteroid.class){
+                drawAsteroid(g2d, (Asteroid) e);
+            }
+            else if(e.getClass() == Blackhole.class){
+                drawBlackhole(g2d, (Blackhole) e);
+            }
+        }
+    }
+
+    private void drawBlackhole(Graphics2D g2d, Blackhole b){
+        AffineTransform old = g2d.getTransform();
+
+        g2d.translate(b.getX(), b.getY());
+        g2d.scale(b.getPulseScale(), b.getPulseScale());
+
+        if(b.isGhost() && this.model.getStatus() == ModelStatus.PLAYING){
+            boolean isVisible =  System.currentTimeMillis()%2 == 0;
+            if(!isVisible){
+                g2d.setTransform(old);
+                return;
+            }
+            else{
+                g2d.setColor(Color.GRAY);
+            }
+        }
+        else{
+            g2d.setColor(this.blackHolecolor);
+        }
+
+        g2d.fillPolygon(b.getShape());
+
+
+        g2d.setColor(Color.BLACK);
+        int coreRadius = (int) (b.getRadius() * 0.7);
+        g2d.fillOval(-coreRadius, -coreRadius, coreRadius * 2, coreRadius * 2);
+
+        g2d.setColor(Color.WHITE);
+        g2d.drawOval(-coreRadius, -coreRadius, coreRadius * 2, coreRadius * 2);
+
+        g2d.setTransform(old);
+    }
+
     private void drawThruster(Graphics2D g2d, Ship ship){
         boolean flicker = System.currentTimeMillis()%2==0;
         if(flicker){
@@ -126,33 +172,31 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
         g2d.drawPolygon(flameShape);
     }
 
-    private void drawAsteroids(Graphics2D g2d, List<Asteroid> asteroids){
-        for(Asteroid asteroid: asteroids){
-            AffineTransform old = g2d.getTransform();
+    private void drawAsteroid(Graphics2D g2d, Asteroid asteroid){
+        AffineTransform old = g2d.getTransform();
 
-            Polygon shape = asteroid.getShape();
+        Polygon shape = asteroid.getShape();
 
-            int xPos = (int)asteroid.getX();
-            int yPos = (int)asteroid.getY();
-            g2d.translate(xPos, yPos);
+        int xPos = (int)asteroid.getX();
+        int yPos = (int)asteroid.getY();
+        g2d.translate(xPos, yPos);
 
-            if(asteroid.isGhost()){
-                boolean isVisible =  System.currentTimeMillis()%2 == 0;
-                if(!isVisible){
-                    g2d.setTransform(old);
-                    continue;
-                }
-                else{
-                    g2d.setColor(Color.GRAY);
-                }
+        if(asteroid.isGhost()){
+            boolean isVisible =  System.currentTimeMillis()%2 == 0;
+            if(!isVisible){
+                g2d.setTransform(old);
+                return;
             }
             else{
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.GRAY);
             }
-            g2d.drawPolygon(shape);
-
-            g2d.setTransform(old);
         }
+        else{
+            g2d.setColor(Color.WHITE);
+        }
+        g2d.drawPolygon(shape);
+
+        g2d.setTransform(old);
     }
 
     private void drawBullet(Graphics2D g2d, List<Bullet> bullets){

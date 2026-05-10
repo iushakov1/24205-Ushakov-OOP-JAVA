@@ -5,17 +5,18 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
 public abstract class GameEntity {
-    double x;
-    double y;
-    double xSpeed;
-    double ySpeed;
-    double rotationAngle;
-    double radius;
-    boolean destroyed;
-    boolean ghostForm;
-    int ghostFormTimer;
+    protected double x;
+    protected double y;
+    protected double xSpeed;
+    protected double ySpeed;
+    protected double rotationAngle;
+    protected double radius;
+    protected boolean destroyed;
+    protected boolean ghostForm;
+    protected int ghostFormTimer;
     protected Polygon shape;
     protected int price = 0;
+    protected int maxSpeed = 2;
 
     public void update(int width, int height){
         if(destroyed){
@@ -50,7 +51,20 @@ public abstract class GameEntity {
     public boolean isDestroyed(){
         return this.destroyed;
     }
-    abstract void damaged();
+    public void damaged(){
+        this.destroyed = true;
+    };
+
+    public Polygon getShape(){
+        return this.shape;
+    }
+
+    public double getDistance(GameEntity other){
+        double dx = this.x - other.x;
+        double dy = this.y - other.y;
+        double distanceSq = dx * dx + dy * dy;
+        return Math.sqrt(distanceSq);
+    }
 
     public boolean isColliding(GameEntity other) {
         double dx = this.x - other.x;
@@ -84,15 +98,16 @@ public abstract class GameEntity {
         return at.createTransformedShape(getShape());
     }
 
-    public Polygon getShape(){
-        return this.shape;
-    }
-
     public void setGhost(int time){
         if(time > 0){
             this.ghostForm = true;
             this.ghostFormTimer = time;
         }
+    }
+
+    public void setCoord(double x, double y){
+        this.x = x;
+        this.y = y;
     }
 
     public boolean isGhost(){
@@ -134,5 +149,21 @@ public abstract class GameEntity {
 
     public double getRadius(){
         return this.radius;
+    }
+
+    public void push(GameEntity other) {
+        /*this.xSpeed -= other.xSpeed * other.getRadius();
+        this.ySpeed -= other.ySpeed * other.getRadius();*/
+        double radiusDif = other.getRadius() - this.radius;
+        this.giveAcceleration(-other.xSpeed * radiusDif, -other.ySpeed * radiusDif);
+    }
+
+    public void setDestroyed(){
+        this.destroyed = true;
+    }
+
+    public void giveAcceleration(double xAcc, double yAcc){
+        this.xSpeed = (maxSpeed >= Math.abs(this.xSpeed + xAcc) ? xAcc + this.xSpeed : maxSpeed);
+        this.ySpeed = (maxSpeed >= Math.abs(this.ySpeed + yAcc) ? yAcc + this.ySpeed : maxSpeed);
     }
 }

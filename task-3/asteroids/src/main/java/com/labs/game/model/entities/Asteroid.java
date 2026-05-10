@@ -5,7 +5,6 @@ import java.awt.*;
 public class Asteroid extends GameEntity{
     private int level;
     private double rotationSpeed;
-    private Polygon shape;
 
     public Asteroid(double x, double y, double radius){
         this.destroyed = (radius < 6);
@@ -21,11 +20,6 @@ public class Asteroid extends GameEntity{
         this.price = 10*level;
     }
 
-    public void push(Asteroid other) {
-        this.xSpeed -= other.xSpeed * other.getRadius();
-        this.ySpeed -= other.ySpeed * other.getRadius();
-    }
-
     private Polygon generateShape(double radius, int points){
         int[] xPoints = new int[points];
         int[] yPoints = new int[points];
@@ -37,10 +31,6 @@ public class Asteroid extends GameEntity{
             yPoints[i] = (int) (pointRadius * Math.sin(angle));
         }
         return new Polygon(xPoints, yPoints, points);
-    }
-
-    public Polygon getShape(){
-        return this.shape;
     }
 
     @Override
@@ -85,13 +75,17 @@ public class Asteroid extends GameEntity{
         }
     }
 
+
     @Override
     public void damaged(){
         if(this.isGhost()){
             return;
         }
         --level;
-        this.destroyed = true;
+        if(level == 0){
+            this.destroyed = true;
+        }
+        this.setGhost(50);
 
     }
 
