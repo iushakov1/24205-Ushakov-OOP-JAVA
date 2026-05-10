@@ -59,12 +59,12 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
     }
 
     private void render(Graphics2D g2d){
-        drawRecordBar(g2d);
-        drawHPBar(g2d);
+
         drawShip(g2d, model.getShip());
         drawEntities(g2d, model.getEntities());
         drawBullet(g2d, model.getBullets());
-
+        drawRecordBar(g2d);
+        drawHPBar(g2d);
 
 
         if(this.model.getStatus() == ModelStatus.GAMEOVER){
