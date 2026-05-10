@@ -163,7 +163,15 @@ public abstract class GameEntity {
     }
 
     public void giveAcceleration(double xAcc, double yAcc){
-        this.xSpeed = (maxSpeed >= Math.abs(this.xSpeed + xAcc) ? xAcc + this.xSpeed : maxSpeed);
-        this.ySpeed = (maxSpeed >= Math.abs(this.ySpeed + yAcc) ? yAcc + this.ySpeed : maxSpeed);
+        this.xSpeed += xAcc;
+        this.ySpeed += yAcc;
+
+        double currentSpeed = Math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed);
+
+        if (currentSpeed > maxSpeed) {
+            double factor = maxSpeed / currentSpeed;
+            this.xSpeed *= factor;
+            this.ySpeed *= factor;
+        }
     }
 }

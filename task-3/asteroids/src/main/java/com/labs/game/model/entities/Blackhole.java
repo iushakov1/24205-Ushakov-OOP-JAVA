@@ -10,7 +10,7 @@ public class Blackhole extends GameEntity{
     private double absorbedRadius = 0;
     private double initRadius = 0;
     private boolean isCollapse = false;
-    private int softeningConstant = 1000;
+    private int softeningConstant = 300;
     public Blackhole(double x, double y, double radius){
         this.destroyed = false;
         this.xSpeed = 0.4;
@@ -19,10 +19,10 @@ public class Blackhole extends GameEntity{
         this.y = y;
         this.radius = radius;
         this.initRadius = radius;
-        this.absorbedRadius = radius*10;
+        this.absorbedRadius = radius*7;
         this.shape = generateShape(radius, 20);
         this.setGhost(100);
-        this.massEffect = radius*0.7;
+        this.massEffect = radius*0.5;
 
     }
 
@@ -109,15 +109,16 @@ public class Blackhole extends GameEntity{
             yDir = yDir - Math.signum(yDir) * height;
         }
 
-        double distance = this.getDistance(other);
-        distance = Math.max(distance, 1);
-        double force = this.massEffect/(distance + softeningConstant);
+        double actualDistanceSq = xDir * xDir + yDir * yDir;
+        double actualDistance = Math.sqrt(actualDistanceSq);
+        if (actualDistance < 1){
+            actualDistance = 1;
+        }
 
-        double xNorm = xDir / distance;
-        double yNorm = yDir / distance;
+        double force = this.massEffect / (actualDistance + softeningConstant);
 
-        double xAcc = xNorm * force;
-        double yAcc = yNorm * force;
+        double xAcc = (xDir / actualDistance) * force;
+        double yAcc = (yDir / actualDistance) * force;
 
         other.giveAcceleration(xAcc, yAcc);
     }
