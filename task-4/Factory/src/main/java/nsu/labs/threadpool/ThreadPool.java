@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class ThreadPool {
-    private static final Queue<Runnable> taskQueue = new LinkedList<>();
+    private final Queue<Runnable> taskQueue = new LinkedList<>();
     private final WorkerThread[] threads;
     private boolean isShutdown = false;
 
@@ -70,7 +70,7 @@ public class ThreadPool {
 
     }
 
-    public static int getTaskQueueSize(){
+    public int getTaskQueueSize(){
         synchronized (taskQueue){
             return taskQueue.size();
         }

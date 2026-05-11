@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class Main {
+public class Factory {
     public static void main(String[] args) {
         Properties config = loadConfig("config.properties");
 
@@ -90,7 +90,7 @@ public class Main {
 
     private static Properties loadConfig(String fileName) {
         Properties props = new Properties();
-        try (InputStream is = Main.class.getClassLoader().getResourceAsStream(fileName)) {
+        try (InputStream is = Factory.class.getClassLoader().getResourceAsStream(fileName)) {
             if (is == null) {
                 System.out.println("Config file not found, using defaults.");
                 return props;

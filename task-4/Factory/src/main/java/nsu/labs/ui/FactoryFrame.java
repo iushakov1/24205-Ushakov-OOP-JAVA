@@ -82,7 +82,7 @@ public class FactoryFrame extends JFrame {
             motorLabel.setText(motorStorage.size() + " / " + motorStorage.getCapacity());
             accLabel.setText(accessoryStorage.size() + " / " + accessoryStorage.getCapacity());
             carLabel.setText(carStorage.size() + " / " + carStorage.getCapacity());
-            queueLabel.setText(String.valueOf(ThreadPool.getTaskQueueSize()));
+            queueLabel.setText(String.valueOf(threadPool.getTaskQueueSize()));
         });
         updateTimer.start();
 
