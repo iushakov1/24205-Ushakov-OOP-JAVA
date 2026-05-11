@@ -25,7 +25,7 @@ public class Car extends Entity{
     }
 
     public String getDescription(){
-        return String.format("Auto %d (Body: %d, Motor: %d, Accessory: %d",
+        return String.format("Auto %d (Body: %d, Motor: %d, Accessory: %d)",
                 getId(),
                 body.getId(),
                 motor.getId(),
