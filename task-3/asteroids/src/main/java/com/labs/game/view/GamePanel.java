@@ -110,11 +110,14 @@ public class GamePanel extends JPanel implements ActionListener, ComponentListen
 
     private void drawEntities(Graphics2D g2d, List<GameEntity> entities){
         for(GameEntity e: entities){
+            if(e.getClass() == Blackhole.class){
+                drawBlackhole(g2d, (Blackhole) e);
+            }
+        }
+
+        for(GameEntity e: entities){
             if(e.getClass() == Asteroid.class){
                 drawAsteroid(g2d, (Asteroid) e);
-            }
-            else if(e.getClass() == Blackhole.class){
-                drawBlackhole(g2d, (Blackhole) e);
             }
         }
     }
