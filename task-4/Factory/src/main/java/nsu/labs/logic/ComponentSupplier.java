@@ -1,6 +1,5 @@
 package nsu.labs.logic;
 
-
 import nsu.labs.model.Entity;
 
 import nsu.labs.storage.Storage;
@@ -28,7 +27,9 @@ public class ComponentSupplier<T extends Entity> extends Thread{
                 try{
                     item = compClass.getConstructor().newInstance();
                 }
-                catch (Exception ignored){}
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 storage.put(item);
 
                 int currentDelay;
