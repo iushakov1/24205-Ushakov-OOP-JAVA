@@ -11,7 +11,9 @@ public class Blackhole extends GameEntity{
     private double initRadius = 0;
     private boolean isCollapse = false;
     private int softeningConstant = 300;
-    public Blackhole(double x, double y, double radius){
+    private int mapWidth;
+    private int mapHeight;
+    public Blackhole(double x, double y, double radius, int width, int height){
         this.destroyed = false;
         this.xSpeed = 0.4;
         this.ySpeed = 0.5;
@@ -23,7 +25,8 @@ public class Blackhole extends GameEntity{
         this.shape = generateShape(radius, 20);
         this.setGhost(100);
         this.massEffect = radius*0.5;
-
+        this.mapWidth = width;
+        this.mapHeight = height;
     }
 
     public double getAbsorbedRadius(){
@@ -46,9 +49,12 @@ public class Blackhole extends GameEntity{
     @Override
     public void update(int width, int height) {
 
+        if(radius > initRadius*3){
+            this.isCollapse = true;
+        }
+
         if(isCollapse){
             radius*=1.1;
-            //this.setGhost(100);
             if(radius > initRadius*6){
                 setDestroyed();
             }
@@ -91,22 +97,19 @@ public class Blackhole extends GameEntity{
     public void addAbsorbed(double radiusOfAbsorbed){
         ++this.absorbed;
         this.radius += (0.3)*radiusOfAbsorbed;
-        if(initRadius * 2 < radius){
-            this.isCollapse = true;
-        }
         this.shape = generateShape(this.radius, 30);
     }
 
-    public void affect(GameEntity other, int width, int height){
+    public void gravityAffect(GameEntity other){
         double xDir = this.x - other.x;
         double yDir = this.y - other.y;
 
-        if(Math.abs(xDir) > width/2){
-            xDir = xDir - Math.signum(xDir) * width;
+        if(Math.abs(xDir) > this.mapWidth/2){
+            xDir = xDir - Math.signum(xDir) * this.mapWidth;
         }
 
-        if(Math.abs(yDir) > height/2){
-            yDir = yDir - Math.signum(yDir) * height;
+        if(Math.abs(yDir) > this.mapHeight/2){
+            yDir = yDir - Math.signum(yDir) * this.mapHeight;
         }
 
         double actualDistanceSq = xDir * xDir + yDir * yDir;
@@ -121,5 +124,42 @@ public class Blackhole extends GameEntity{
         double yAcc = (yDir / actualDistance) * force;
 
         other.giveAcceleration(xAcc, yAcc);
+    }
+
+    @Override
+    public boolean isAffectable(GameEntity other){
+        if(this == other){
+            return false;
+        }
+        double dist = this.getDistance(other);
+        if (dist <= this.getAbsorbedRadius()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void shipAffect(Ship ship){
+        Blackhole b = this;
+        if(this.isAffectable(ship) && !ship.isGhost()){
+            this.gravityAffect(ship);
+        }
+        if(this.isColliding(ship) && !ship.isGhost()){
+            ship.damaged();
+        }
+    }
+
+    @Override
+    public void entityAffect(GameEntity entity){
+        Blackhole b = this;
+        if(this.isAffectable(entity)){
+            this.gravityAffect(entity);
+            if(this.isColliding(entity) && !entity.isGhost()){
+                entity.damaged();
+                if(!this.isCollapse){
+                    this.addAbsorbed(this.getRadius());
+                }
+            }
+        }
     }
 }

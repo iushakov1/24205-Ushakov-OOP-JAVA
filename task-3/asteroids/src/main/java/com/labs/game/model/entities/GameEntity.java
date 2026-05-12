@@ -18,6 +18,7 @@ public abstract class GameEntity {
     protected int price = 0;
     protected int maxSpeed = 2;
 
+
     public void update(int width, int height){
         if(destroyed){
             return;
@@ -152,10 +153,24 @@ public abstract class GameEntity {
     }
 
     public void push(GameEntity other) {
-        /*this.xSpeed -= other.xSpeed * other.getRadius();
-        this.ySpeed -= other.ySpeed * other.getRadius();*/
-        double radiusDif = other.getRadius() - this.radius;
-        this.giveAcceleration(-other.xSpeed * radiusDif, -other.ySpeed * radiusDif);
+        double dx = this.x - other.x;
+        double dy = this.y - other.y;
+
+        double distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance == 0) {
+            dx = Math.random() - 0.5;
+            dy = Math.random() - 0.5;
+            distance = Math.sqrt(dx * dx + dy * dy);
+        }
+
+        double nx = dx / distance;
+        double ny = dy / distance;
+
+        double bounceIntensity = 0.5;
+
+        this.giveAcceleration(nx * bounceIntensity, ny * bounceIntensity);
+        other.giveAcceleration(-nx * bounceIntensity, -ny * bounceIntensity);
     }
 
     public void setDestroyed(){
@@ -173,5 +188,17 @@ public abstract class GameEntity {
             this.xSpeed *= factor;
             this.ySpeed *= factor;
         }
+    }
+
+    public boolean isAffectable(GameEntity other){
+        return true;
+    }
+
+    public void shipAffect(Ship ship){
+
+    }
+
+    public void entityAffect(GameEntity entity){
+
     }
 }

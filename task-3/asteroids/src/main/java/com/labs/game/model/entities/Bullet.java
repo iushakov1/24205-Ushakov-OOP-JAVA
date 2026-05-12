@@ -63,4 +63,29 @@ public class Bullet extends GameEntity{
     public double getVectorSpeed(){
         return Math.sqrt(this.xSpeed*this.xSpeed + this.ySpeed*this.ySpeed);
     }
+
+    @Override
+    public boolean isAffectable(GameEntity other){
+        if(other.isGhost()){
+            return false;
+        }
+
+        if(this == other){
+            return false;
+        }
+        return this.isColliding(other);
+    }
+
+    @Override
+    public void shipAffect(Ship ship){
+
+    }
+
+    @Override
+    public void entityAffect(GameEntity entity){
+        if(this.isAffectable(entity)){
+            entity.damaged();
+            this.damaged();
+        }
+    }
 }
