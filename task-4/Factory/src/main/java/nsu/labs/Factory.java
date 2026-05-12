@@ -44,15 +44,15 @@ public class Factory {
 
         List<ComponentSupplier<?>> allSuppliers = new ArrayList<>();
 
-        ComponentSupplier<Body> bodySup = new ComponentSupplier<>(bodyStorage, Body::new, 500);
-        ComponentSupplier<Motor> motorSup = new ComponentSupplier<>(motorStorage, Motor::new, 500);
+        ComponentSupplier<Body> bodySup = new ComponentSupplier<>(bodyStorage, Body.class, 500);
+        ComponentSupplier<Motor> motorSup = new ComponentSupplier<>(motorStorage, Motor.class, 500);
         bodySup.start();
         motorSup.start();
         allSuppliers.add(bodySup);
         allSuppliers.add(motorSup);
 
         for (int i = 0; i < accSuppliersCount; i++) {
-            ComponentSupplier<Accessory> accSup = new ComponentSupplier<>(accStorage, Accessory::new, 1000);
+            ComponentSupplier<Accessory> accSup = new ComponentSupplier<>(accStorage, Accessory.class, 1000);
             accSup.start();
             allSuppliers.add(accSup);
         }

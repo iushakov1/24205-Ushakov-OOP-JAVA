@@ -11,11 +11,11 @@ public class StorageTest {
     static class TestItem extends Entity{}
 
     private Storage<TestItem> storage;
-    private final int CAPACITY = 2;
+    private final int capacity = 2;
 
     @BeforeEach
     void setUp() {
-        storage = new Storage<>(CAPACITY);
+        storage = new Storage<>(capacity);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class StorageTest {
 
         storage.get();
         producer.join(500);
-        assertEquals(CAPACITY, storage.size());
+        assertEquals(capacity, storage.size());
 
     }
 

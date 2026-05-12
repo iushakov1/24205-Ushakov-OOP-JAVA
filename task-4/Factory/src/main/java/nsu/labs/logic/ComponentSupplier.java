@@ -5,16 +5,14 @@ import nsu.labs.model.Entity;
 
 import nsu.labs.storage.Storage;
 
-import java.util.function.Supplier;
-
 public class ComponentSupplier<T extends Entity> extends Thread{
     private final Storage<T> storage;
-    private final Supplier<T> factory;
+    private final Class<T> compClass;
     private int delay;
 
-    public ComponentSupplier(Storage<T> storage, Supplier<T> factory, int initialDelay){
+    public ComponentSupplier(Storage<T> storage, Class<T> compClass, int initialDelay){
         this.storage = storage;
-        this.factory = factory;
+        this.compClass = compClass;
         this.delay = initialDelay;
     }
 
@@ -26,7 +24,11 @@ public class ComponentSupplier<T extends Entity> extends Thread{
     public void run(){
         try{
             while(!isInterrupted()){
-                T item = factory.get();
+                T item = null;
+                try{
+                    item = compClass.getConstructor().newInstance();
+                }
+                catch (Exception ignored){}
                 storage.put(item);
 
                 int currentDelay;
