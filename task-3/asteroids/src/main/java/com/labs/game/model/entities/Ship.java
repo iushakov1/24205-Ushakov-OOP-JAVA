@@ -146,19 +146,4 @@ public class Ship extends GameEntity {
         this.setGhost(20);
     }
 
-    @Override
-    public boolean isAffectable(GameEntity other){
-        if(this == other){
-            return false;
-        }
-        return false;
-    }
-
-    @Override
-    public void shipAffect(Ship ship){}
-
-    @Override
-    public void entityAffect(GameEntity entity){
-    }
-
 }

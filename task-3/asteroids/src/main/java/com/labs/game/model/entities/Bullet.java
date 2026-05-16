@@ -65,7 +65,7 @@ public class Bullet extends GameEntity{
     }
 
     @Override
-    public boolean isAffectable(GameEntity other){
+    public boolean isAffectableOnEntity(GameEntity other){
         if(other.isGhost()){
             return false;
         }
@@ -77,13 +77,8 @@ public class Bullet extends GameEntity{
     }
 
     @Override
-    public void shipAffect(Ship ship){
-
-    }
-
-    @Override
     public void entityAffect(GameEntity entity){
-        if(this.isAffectable(entity)){
+        if(this.isAffectableOnEntity(entity)){
             entity.damaged();
             this.damaged();
         }

@@ -127,7 +127,13 @@ public class Blackhole extends GameEntity{
     }
 
     @Override
-    public boolean isAffectable(GameEntity other){
+    public boolean isAffectableOnShip(Ship ship){
+        double dist = this.getDistance(ship);
+        return  (dist <= this.getAbsorbedRadius() && !ship.isGhost());
+    }
+
+    @Override
+    public boolean isAffectableOnEntity(GameEntity other){
         if(this == other){
             return false;
         }
@@ -140,19 +146,17 @@ public class Blackhole extends GameEntity{
 
     @Override
     public void shipAffect(Ship ship){
-        Blackhole b = this;
-        if(this.isAffectable(ship) && !ship.isGhost()){
+        if(this.isAffectableOnShip(ship)){
             this.gravityAffect(ship);
-        }
-        if(this.isColliding(ship) && !ship.isGhost()){
-            ship.damaged();
+            if(this.isColliding(ship)){
+                ship.damaged();
+            }
         }
     }
 
     @Override
     public void entityAffect(GameEntity entity){
-        Blackhole b = this;
-        if(this.isAffectable(entity)){
+        if(this.isAffectableOnEntity(entity)){
             this.gravityAffect(entity);
             if(this.isColliding(entity) && !entity.isGhost()){
                 entity.damaged();
@@ -162,4 +166,5 @@ public class Blackhole extends GameEntity{
             }
         }
     }
+    
 }

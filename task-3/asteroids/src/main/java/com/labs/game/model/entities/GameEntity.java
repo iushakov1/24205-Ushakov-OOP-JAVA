@@ -190,8 +190,12 @@ public abstract class GameEntity {
         }
     }
 
-    public boolean isAffectable(GameEntity other){
-        return true;
+    public boolean isAffectableOnEntity(GameEntity other){
+        return false;
+    }
+
+    public boolean isAffectableOnShip(Ship ship){
+        return false;
     }
 
     public void shipAffect(Ship ship){

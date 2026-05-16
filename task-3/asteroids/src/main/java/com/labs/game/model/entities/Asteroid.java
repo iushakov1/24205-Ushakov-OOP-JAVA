@@ -161,18 +161,23 @@ public class Asteroid extends GameEntity{
     }
 
     @Override
-    public boolean isAffectable(GameEntity other){
-        if(this == other){
+    public boolean isAffectableOnShip(Ship ship){
+        return !ship.isGhost() && !this.isGhost() && this.isColliding(ship);
+    }
+
+    @Override
+    public boolean isAffectableOnEntity(GameEntity other){
+        if(this == other) {
             return false;
         }
 
         Asteroid a = this;
-        return a.isColliding(other) && !other.isGhost() && !a.isGhost();
+        return !other.isGhost() && !a.isGhost() && a.isColliding(other);
     }
 
     @Override
     public void shipAffect(Ship ship){
-        if(this.isAffectable(ship)){
+        if(this.isAffectableOnShip(ship)){
             ship.damaged();
         }
     }
@@ -180,15 +185,20 @@ public class Asteroid extends GameEntity{
     @Override
     public void entityAffect(GameEntity entity){
 
-        if(entity.getClass() == Asteroid.class && this.isColliding(entity)){
-            if(this.getRadius() > entity.getRadius()){
-                this.push(entity);
-            }
-            return;
-        }
+        if(this.isAffectableOnEntity(entity)){
 
-        if(this.isAffectable(entity)){
-            entity.damaged();
+            Class entityClass = entity.getClass();
+
+            if(entityClass == Asteroid.class){
+                if(this.getRadius() > entity.getRadius()){
+                    this.push(entity);
+                }
+            }
+
+            else{
+                entity.damaged();
+            }
+
         }
     }
 
