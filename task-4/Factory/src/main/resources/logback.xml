@@ -11,4 +11,7 @@
     <root level="INFO">
         <appender-ref ref="FILE" />
     </root>
+    <root level="DEBUG">
+        <appender-ref ref="FILE" />
+    </root>
 </configuration>
