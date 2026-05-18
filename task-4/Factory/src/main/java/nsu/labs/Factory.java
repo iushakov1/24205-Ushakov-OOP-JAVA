@@ -51,10 +51,13 @@ public class Factory {
         allSuppliers.add(bodySup);
         allSuppliers.add(motorSup);
 
+        ArrayList<ComponentSupplier<Accessory>> accessorySuppliers = new ArrayList<>();
+
         for (int i = 0; i < accSuppliersCount; i++) {
             ComponentSupplier<Accessory> accSup = new ComponentSupplier<>(accStorage, Accessory.class, 1000);
             accSup.start();
             allSuppliers.add(accSup);
+            accessorySuppliers.add(accSup);
         }
 
         Dealer[] dealers = new Dealer[dealersCount];
@@ -74,7 +77,7 @@ public class Factory {
                 carStorage,
                 bodySup,
                 motorSup,
-                allSuppliers.get(2),
+                accessorySuppliers,
                 dealers,
                 pool,
                 () -> {

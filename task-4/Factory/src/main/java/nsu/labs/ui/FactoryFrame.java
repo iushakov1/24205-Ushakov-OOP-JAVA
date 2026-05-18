@@ -2,6 +2,7 @@ package nsu.labs.ui;
 
 import nsu.labs.logic.ComponentSupplier;
 import nsu.labs.logic.Dealer;
+import nsu.labs.model.Accessory;
 import nsu.labs.storage.Storage;
 import nsu.labs.threadpool.ThreadPool;
 
@@ -9,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 public class FactoryFrame extends JFrame {
     private final ThreadPool threadPool;
@@ -25,7 +27,7 @@ public class FactoryFrame extends JFrame {
             Storage<?> cars,
             ComponentSupplier<?> bodySup,
             ComponentSupplier<?> motorSup,
-            ComponentSupplier<?> accSup,
+            ArrayList<ComponentSupplier<Accessory>> accSuppliers,
             Dealer[] dealers,
             ThreadPool pool,
             Runnable onShutdown)
@@ -69,7 +71,9 @@ public class FactoryFrame extends JFrame {
 
         controlPanel.add(createSliderPanel("Body's supply", 0, 5000, 1000, bodySup::setDelay));
         controlPanel.add(createSliderPanel("Motor's supply", 0, 5000, 1000, motorSup::setDelay));
-        controlPanel.add(createSliderPanel("Accessory's supply", 0, 5000, 1000, accSup::setDelay));
+        controlPanel.add(createSliderPanel("Accessory's supply", 0, 5000, 1000, val -> {
+            for (ComponentSupplier<Accessory> s: accSuppliers) s.setDelay(val);
+        }));
         controlPanel.add(createSliderPanel("Dealer request", 0, 5000, 2000, val -> {
             for (Dealer d : dealers) d.setDelay(val);
         }));
