@@ -1,18 +1,16 @@
 package com.labs.game.controller;
 
 import com.labs.game.model.GameModel;
-import com.labs.game.model.ModelStatus;
 import com.labs.game.view.GameFrame;
-import com.labs.game.view.MenuPanel;
 
 import javax.swing.Timer;
 
 public class GameCore {
-    private GameModel model;
-    private GameFrame frame;
-    private ShipController shipController;
+    private final GameModel model;
+    private final GameFrame frame;
+    private final ShipController shipController;
     private MenuController menuController;
-    private Timer timer;
+    private final Timer timer;
 
     public GameCore(int width, int height){
         model = new GameModel(width, height);

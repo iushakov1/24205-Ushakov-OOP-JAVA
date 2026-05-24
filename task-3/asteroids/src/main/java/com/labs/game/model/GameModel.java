@@ -1,6 +1,5 @@
 package com.labs.game.model;
 
-import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.event.RepaintEvent;
 import com.labs.game.event.StatusChangeEvent;
 import com.labs.game.model.entities.*;
@@ -15,7 +14,6 @@ public class GameModel extends Observable {
     private ModelStatus status = ModelStatus.MENU;
     private ModelStatus lastStatus = ModelStatus.MENU;
     private Record record;
-    private int gameStage = 0;
 
 
     private Ship ship;
@@ -40,7 +38,6 @@ public class GameModel extends Observable {
 
             case STARTNEWGAME:
             {
-                this.gameStage = 0;
                 this.entities.clear();
                 this.bullets.clear();
                 Asteroid.setAsteroidCount(0);
@@ -95,7 +92,6 @@ public class GameModel extends Observable {
                 }
 
                 if(Asteroid.getAsteroidCount() == 0){
-                    ++gameStage;
                     this.entities.add(new Blackhole(width*Math.random(), height*Math.random(), 30 + 30*Math.random(), this.width, this.height));
                     this.ship.setHealthPoint(3);
                     this.generateAsteroids();

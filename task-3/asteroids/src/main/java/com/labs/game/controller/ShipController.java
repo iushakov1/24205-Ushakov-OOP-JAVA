@@ -7,7 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashSet;
 
-public class ShipController extends Observable implements KeyListener {
+public class ShipController implements KeyListener {
     private Ship ship;
     public ShipController(Ship ship){
         this.ship = ship;

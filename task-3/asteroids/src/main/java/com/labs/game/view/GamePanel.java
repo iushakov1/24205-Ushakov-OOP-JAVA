@@ -1,11 +1,8 @@
 package com.labs.game.view;
 
-import com.labs.game.event.Event;
-import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.model.GameModel;
 import com.labs.game.model.ModelStatus;
 import com.labs.game.model.entities.*;
-import com.labs.game.service.Observer;
 
 import javax.swing.*;
 import java.awt.*;

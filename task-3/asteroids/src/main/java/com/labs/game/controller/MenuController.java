@@ -21,7 +21,6 @@ public class MenuController implements ActionListener {
         if(e.getSource() == menuPanel.getStartGameButton()){
             model.changeStatus(ModelStatus.STARTNEWGAME);
         }
-
         if(e.getSource() == this.menuPanel.getExitButton()){
             this.model.changeStatus(ModelStatus.EXITGAME);
         }
