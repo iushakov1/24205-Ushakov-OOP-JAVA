@@ -16,7 +16,7 @@ public class GameModel extends Observable {
     private Record record;
 
 
-    private Ship ship;
+    private List<Ship> ships = new CopyOnWriteArrayList<>();
     private List<Bullet> bullets = new CopyOnWriteArrayList<>();
     private List<GameEntity> entities = new CopyOnWriteArrayList<>();
 
@@ -25,7 +25,6 @@ public class GameModel extends Observable {
         this.width = width;
         this.height = height;
         this.status = ModelStatus.MENU;
-        this.ship = new Ship(width/2, height/2);
     }
 
     public void update(){
@@ -41,8 +40,7 @@ public class GameModel extends Observable {
                 this.entities.clear();
                 this.bullets.clear();
                 Asteroid.setAsteroidCount(0);
-                this.ship.setCoord((double) width /2, (double) height /2);
-                this.ship.reset();
+
                 this.record.resetCurScore();
                 this.changeStatus(ModelStatus.PLAYING);
                 this.notify(new StatusChangeEvent());
@@ -51,10 +49,10 @@ public class GameModel extends Observable {
 
             case PLAYING:
             {
-                if(ship.isFiring() && ship.canShoot()){
+                /*if(ship.isFiring() && ship.canShoot()){
                     ship.resetCooldown();
                     bullets.add(new Bullet(ship));
-                }
+                }*/
 
                 for(Bullet b: bullets){
                     if(b.getVectorSpeed() < 2){
@@ -71,12 +69,12 @@ public class GameModel extends Observable {
                     }
                 }
 
-                ship.update(this.width, this.height);
+                //ship.update(this.width, this.height);
 
                 for(GameEntity entity: entities){
 
                     entity.update(this.width, this.height);
-                    entity.shipAffect(this.ship);
+                    //entity.shipAffect(this.ship);
                     for(GameEntity otherEntity: entities){
                         entity.entityAffect(otherEntity);
                     }
@@ -86,16 +84,16 @@ public class GameModel extends Observable {
 
                 }
 
-                if(ship.isDestroyed()){
+                /*if(ship.isDestroyed()){
                     this.status = ModelStatus.GAMEOVER;
                     this.notify(new StatusChangeEvent());
-                }
+                }*/
 
-                if(Asteroid.getAsteroidCount() == 0){
+                /*if(Asteroid.getAsteroidCount() == 0){
                     this.entities.add(new Blackhole(width*Math.random(), height*Math.random(), 30 + 30*Math.random(), this.width, this.height));
                     this.ship.setHealthPoint(3);
                     this.generateAsteroids();
-                }
+                }*/
 
                 this.notify(new RepaintEvent());
                 break;
@@ -107,9 +105,6 @@ public class GameModel extends Observable {
 
     }
 
-    public Ship getShip(){
-        return ship;
-    }
 
 
     public List<GameEntity> getEntities(){
@@ -144,9 +139,6 @@ public class GameModel extends Observable {
         for(int i = 0; i < numOfAsteroids; ++i){
             double x = Math.random()*width;
             double y = Math.random()*height;
-            if ((this.getPointDistance(x, y, this.ship.getX(), this.ship.getY()) < this.ship.getRadius())){
-                continue;
-            }
             double r = 8 + Math.random()*40;
             this.entities.add(new Asteroid(x, y, r, entities, record));
         }
