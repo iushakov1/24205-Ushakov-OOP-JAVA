@@ -15,9 +15,9 @@ public class GameServer {
 
     private List<ClientHandler> clients = new CopyOnWriteArrayList<>();
 
-    public GameServer(int port){
+    public GameServer(int port, int width, int height){
         PORT = port;
-        model = new GameModel(800, 600);
+        model = new GameModel(width, height);
         core = new GameCore(model, this);
     }
 

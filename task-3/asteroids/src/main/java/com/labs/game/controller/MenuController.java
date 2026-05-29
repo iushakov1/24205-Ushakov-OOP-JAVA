@@ -14,8 +14,12 @@ public class MenuController implements ActionListener {
     private MenuPanel menuPanel;
     private GameModel model;
     private ShipController shipController;
+    private int width;
+    private int height;
     public MenuController(GameModel model, MenuPanel menuPanel, ShipController shipController){
         this.model = model;
+        this.width = (int) model.getWidth();
+        this.height = (int) model.getHeight();
         this.menuPanel = menuPanel;
         this.shipController = shipController;
         menuPanel.setButtonListener(this);
@@ -49,7 +53,7 @@ public class MenuController implements ActionListener {
 
                     this.shipController.setClient(client);
 
-                    SwingUtilities.invokeLater(() -> model.changeStatus(ModelStatus.STARTNEWGAME));
+                    model.changeStatus(ModelStatus.STARTNEWGAME);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -61,14 +65,18 @@ public class MenuController implements ActionListener {
         int port = Integer.parseInt(menuPanel.getPortField().getText());
         new Thread(() -> {
             try {
-                GameServer server = new GameServer(port);
+                GameServer server = new GameServer(port, width, height);
                 server.startServer();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
 
-        try { Thread.sleep(500); } catch (InterruptedException e) {}
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         connectToServer();
     }

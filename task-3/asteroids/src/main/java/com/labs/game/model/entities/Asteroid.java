@@ -1,6 +1,5 @@
 package com.labs.game.model.entities;
 
-import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.model.Record;
 import com.labs.game.network.Data.AsteroidData;
 import com.labs.game.network.Data.EntityData;
@@ -13,18 +12,22 @@ import java.util.List;
 public class Asteroid extends GameEntity{
     private int level;
     private double rotationSpeed;
-    private transient List<GameEntity> entities;
+    private List<GameEntity> entities;
     private Record record;
     private static int asteroidCount = 0;
 
     public Asteroid(double x, double y, double radius, List<GameEntity> entities, Record record) {
-        this(x, y, radius, entities, record, new Random().nextLong());
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.entities = entities;
+        this.record = record;
+        this.random = new Random();
     }
 
     public Asteroid(double x, double y, double radius, List<GameEntity> entities, Record record, long seed){
         this.seed = seed;
         this.random = new Random(seed);
-        asteroidCount += (destroyed ? 0:1) ;
         this.xSpeed = random.nextDouble()+0.1;
         this.ySpeed = random.nextDouble()+0.1;
         this.x = x;

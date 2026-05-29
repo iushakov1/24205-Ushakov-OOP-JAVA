@@ -189,11 +189,6 @@ public class GameModel extends Observable {
 
             a.setId(GameCore.idGenerator.getAndIncrement());
             this.entities.add(a);
-
-
-            long asteroidSeed = random.nextLong();
-
-
         }
     }
 
@@ -206,7 +201,6 @@ public class GameModel extends Observable {
         Blackhole b = new Blackhole(x, y, r, width, height);
         b.setId(GameCore.idGenerator.getAndIncrement());
         this.entities.add(b);
-        long asteroidSeed = random.nextLong();
     }
 
     private double getPointDistance(double x1, double y1, double x2, double y2) {
@@ -295,16 +289,36 @@ public class GameModel extends Observable {
     }
 
     private Ship findShipById(int id) {
-        return ships.stream().filter(s -> s.getId() == id).findFirst().orElse(null);
+        for(Ship s: ships){
+            if(s.getId() == id){
+                return s;
+            }
+        }
+        return null;
     }
     private GameEntity findEntityById(int id) {
-        return entities.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
+        for(GameEntity e: entities){
+            if(e.getId() == id){
+                return e;
+            }
+        }
+        return null;
     }
     private Bullet findBulletById(int id) {
-        return bullets.stream().filter(b -> b.getId() == id).findFirst().orElse(null);
+        for(Bullet b: bullets){
+            if(b.getId() == id){
+                return b;
+            }
+        }
+        return null;
     }
     private boolean containsId(java.util.List<EntityData> list, int id) {
-        return list.stream().anyMatch(data -> data.id == id);
+        for(EntityData data: list){
+            if(data.id == id){
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<Ship> getShips(){
@@ -331,6 +345,13 @@ public class GameModel extends Observable {
     }
 
     private long countAsteroids() {
-        return entities.stream().filter(e -> e instanceof Asteroid).count();
+        int c = 0;
+        for(GameEntity entity : entities){
+            if (entity instanceof Asteroid){
+                ++c;
+            }
+        }
+        return c;
     }
+
 }

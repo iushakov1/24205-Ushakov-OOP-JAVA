@@ -29,8 +29,8 @@ public class ClientHandler implements Runnable {
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
 
-            playerShip = new Ship(400, 300);
-            playerShip.setGhost(0);
+            playerShip = new Ship((int)model.getWidth()/2,(int)model.getHeight());
+            playerShip.setGhost(80);
             if (model.getStatus() != ModelStatus.PLAYING) {
                 model.changeStatus(ModelStatus.STARTNEWGAME);
             }
