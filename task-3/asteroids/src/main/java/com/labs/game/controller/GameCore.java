@@ -1,43 +1,40 @@
 package com.labs.game.controller;
 
-import com.labs.game.model.GameModel;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.swing.Timer;
+import com.labs.game.model.GameModel;
+import com.labs.game.model.ModelStatus;
+import com.labs.game.network.GameServer;
+import com.labs.game.network.GameState;
 
 public class GameCore {
     private final GameModel model;
-    private final Timer timer;
+    private final ScheduledExecutorService scheduler;
+    private final GameServer networkServer;
 
-    public GameCore(int width, int height){
-        model = new GameModel(width, height);
+    public static final AtomicInteger idGenerator = new AtomicInteger(1);
 
-        timer = new Timer(20, e -> {gameTick();});
+    public GameCore(GameModel model, GameServer networkServer) {
+        this.model = model;
+        model.changeStatus(ModelStatus.MENU);
+
+        this.networkServer = networkServer;
+        this.scheduler = Executors.newScheduledThreadPool(1);
 
     }
 
-    private void gameTick(){
+    public void start() {
 
-        switch (model.getStatus()){
-            case PLAYING:
-            {
-                break;
-            }
-            case MENU:
-            {
-                break;
-            }
-            case EXITGAME:
-                this.end();
-        }
-
-        model.update();
+        scheduler.scheduleAtFixedRate(this::gameTick, 0, 18, TimeUnit.MILLISECONDS);
     }
 
-    public void start(){
-        timer.start();
-    }
+    private void gameTick() {
+        model.update(GameModel.GameMode.SERVER);
 
-    public void end(){
-        this.timer.stop();
+        GameState currentState = model.buildGameState();
+        networkServer.broadcast(currentState);
     }
 }

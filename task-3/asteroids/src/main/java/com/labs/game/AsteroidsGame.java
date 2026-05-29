@@ -8,7 +8,7 @@ import com.labs.game.network.GameServer;
 public class AsteroidsGame {
     public static void main(String[] args) {
         if(args[0] == "server"){
-            GameServer gameServer = new GameServer();
+           // GameServer gameServer = new GameServer();
 
         }
         else{

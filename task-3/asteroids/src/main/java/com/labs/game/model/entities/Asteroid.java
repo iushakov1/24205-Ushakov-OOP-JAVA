@@ -2,6 +2,10 @@ package com.labs.game.model.entities;
 
 import com.labs.game.event.RecordUpdateEvent;
 import com.labs.game.model.Record;
+import com.labs.game.network.Data.AsteroidData;
+import com.labs.game.network.Data.EntityData;
+
+import java.util.Random;
 
 import java.awt.*;
 import java.util.List;
@@ -9,20 +13,26 @@ import java.util.List;
 public class Asteroid extends GameEntity{
     private int level;
     private double rotationSpeed;
-    private List<GameEntity> entities;
+    private transient List<GameEntity> entities;
     private Record record;
     private static int asteroidCount = 0;
-    public Asteroid(double x, double y, double radius, List<GameEntity> entities, Record record){
-        this.destroyed = (radius < 6);
+
+    public Asteroid(double x, double y, double radius, List<GameEntity> entities, Record record) {
+        this(x, y, radius, entities, record, new Random().nextLong());
+    }
+
+    public Asteroid(double x, double y, double radius, List<GameEntity> entities, Record record, long seed){
+        this.seed = seed;
+        this.random = new Random(seed);
         asteroidCount += (destroyed ? 0:1) ;
-        this.xSpeed = Math.random()+0.1;
-        this.ySpeed = Math.random()+0.1;
+        this.xSpeed = random.nextDouble()+0.1;
+        this.ySpeed = random.nextDouble()+0.1;
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.setLevel();
-        this.shape = generateShape(radius, 8);
-        this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+        this.shape = generateShape(radius, 8, random);
+        this.rotationSpeed = (random.nextDouble() - 0.5) * 0.1;
         this.setGhost(100 * (4 - level));
         this.price = 10*level;
         this.entities = entities;
@@ -34,17 +44,23 @@ public class Asteroid extends GameEntity{
         return asteroidCount;
     }
 
-    private Polygon generateShape(double radius, int points){
+    private Polygon generateShape(double radius, int points, Random random){
         int[] xPoints = new int[points];
         int[] yPoints = new int[points];
 
         for(int i = 0; i < points; ++i){
             double angle = 2 * Math.PI * ((double)i/points);
-            double pointRadius = radius * (0.8 + Math.random()*0.4);
+            double pointRadius = radius * (0.8 + random.nextDouble()*0.4);
             xPoints[i] = (int) (pointRadius * Math.cos(angle));
             yPoints[i] = (int) (pointRadius * Math.sin(angle));
         }
         return new Polygon(xPoints, yPoints, points);
+    }
+
+    @Override
+    public EntityData toEntityData() {
+        AsteroidData aData = new AsteroidData("Asteroid", id, (int)x, (int)y, getAngle(), radius, ghostFormTimer, seed);
+        return aData;
     }
 
     @Override
@@ -56,8 +72,8 @@ public class Asteroid extends GameEntity{
 
         this.updateGhostForm();
 
-        xSpeed += (Math.random() - 0.5) * 0.05;
-        ySpeed += (Math.random() - 0.5) * 0.05;
+        xSpeed += (random.nextDouble() - 0.5) * 0.05;
+        ySpeed += (random.nextDouble() - 0.5) * 0.05;
         if (currentSpeed > 0) {
             if (currentSpeed > upSpeedLimit) {
                 xSpeed = (xSpeed / currentSpeed) * upSpeedLimit;
@@ -95,49 +111,34 @@ public class Asteroid extends GameEntity{
         if(this.isGhost()){
             return;
         }
-        --level;
-        Asteroid a = this;
-        switch(a.getLevel()){
-            case 2:{
-                double distribution = Math.random();
-                double distribution1 = Math.random()*(1-distribution);
 
-                double r1Scale = distribution;
-                double r2Scale = (1-distribution)*distribution1;
-                double r3Scale = 1 - ((1-distribution)*distribution1);
+        record.update(this.getPrice());
 
-                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale, entities, record));
-                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale, entities, record));
-                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r3Scale, entities, record));
 
-                --asteroidCount;
-                a.setDestroyed();
-                break;
+        --asteroidCount;
+
+        if(radius > 15){
+            int fragments = (radius > 30) ? 3 : 2;
+            double newRadius = radius/2;
+
+            for(int i = 0; i < fragments; ++i){
+                double angle = random.nextDouble() * 2 * Math.PI;
+                double speed = 0.8 + random.nextDouble() * 1.2;
+                double vx = Math.cos(angle) * speed;
+                double vy = Math.sin(angle) * speed;
+
+                long newSeed = seed + i + 1;
+                Asteroid fragment = new Asteroid(x, y, newRadius, entities, record, newSeed);
+
+                fragment.setId(com.labs.game.controller.GameCore.idGenerator.getAndIncrement());
+                fragment.xSpeed = vx;
+                fragment.ySpeed = vy;
+
+                entities.add(fragment);
             }
-            case 1:{
-                double distribution = Math.random();
-
-                double r1Scale = distribution;
-                double r2Scale = 1 - distribution;
-
-                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r1Scale, entities, record));
-                entities.add(new Asteroid(a.getX(), a.getY(), a.getRadius()*r2Scale, entities, record));
-                --asteroidCount;
-
-                a.setDestroyed();
-                break;
-            }
-            case 0:{
-                --asteroidCount;
-                a.setDestroyed();
-                break;
-            }
-
         }
-        record.update(a.getPrice());
 
-        this.setGhost(50);
-
+        this.destroyed = true;
     }
 
     public int getLevel(){

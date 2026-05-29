@@ -1,6 +1,9 @@
 package com.labs.game.model.entities;
 
 
+import com.labs.game.network.Data.EntityData;
+import com.labs.game.network.Data.ShipData;
+
 import java.awt.*;
 
 public class Ship extends GameEntity {
@@ -10,6 +13,9 @@ public class Ship extends GameEntity {
     private int cooldownTimer = 0;
     private boolean thrusting;
     private int healthPoint;
+
+    boolean isRotatingLeft;
+    boolean isRotatingRight;
 
     public Ship(int x, int y){
         this.x = x;
@@ -24,7 +30,24 @@ public class Ship extends GameEntity {
     }
 
     @Override
+    public EntityData toEntityData() {
+        ShipData sData = new ShipData("Ship", id, (int)x, (int)y, getAngle(), radius, getGhostTime(), isThrusting(), getHealthPoint());
+        return sData;
+    }
+
+    @Override
     public void update(int width, int height){
+
+        if (this.thrusting) {
+            thrust();
+        }
+
+        if (isRotatingLeft) {
+            this.rotateLeft();
+        }
+        if (isRotatingRight) {
+            this.rotateRight();
+        }
 
         if(destroyed){
             return;
@@ -56,7 +79,7 @@ public class Ship extends GameEntity {
     public void thrust(){
         double speedLimit = 2;
 
-        double radians = Math.toRadians(this.rotationAngle);
+        double radians = (this.rotationAngle);
 
         double rotSin = Math.sin(radians);
         double rotCos = Math.cos(radians);
@@ -73,11 +96,11 @@ public class Ship extends GameEntity {
     }
 
     public void rotateLeft(){
-        rotationAngle = (rotationAngle-2 + 360)%360;
+        rotationAngle = Math.toRadians((Math.toDegrees(rotationAngle)-2 + 360)%360);
     }
 
     public void rotateRight(){
-        rotationAngle = (rotationAngle+2)%360;
+        rotationAngle = Math.toRadians((Math.toDegrees(rotationAngle)+2)%360);
     }
 
     public void fire(){
@@ -128,6 +151,7 @@ public class Ship extends GameEntity {
 
     public void setHealthPoint(int hp){
         this.healthPoint = hp;
+
     }
 
     public int getHealthPoint() {
@@ -146,4 +170,11 @@ public class Ship extends GameEntity {
         this.setGhost(20);
     }
 
+    public void setRotatingLeft(boolean t){
+        this.isRotatingLeft = t;
+    }
+
+    public void setRotatingRight(boolean t){
+        this.isRotatingRight = t;
+    }
 }

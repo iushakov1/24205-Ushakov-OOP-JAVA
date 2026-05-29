@@ -18,7 +18,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.labs.game.AsteroidsGame</mainClass>
+                            <mainClass>com.labs.game.network.ClientLauncher</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

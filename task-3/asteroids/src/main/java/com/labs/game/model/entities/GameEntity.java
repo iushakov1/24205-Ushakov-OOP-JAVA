@@ -1,8 +1,11 @@
 package com.labs.game.model.entities;
 
+import com.labs.game.network.Data.EntityData;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.util.Random;
 
 public abstract class GameEntity {
     protected double x;
@@ -17,7 +20,31 @@ public abstract class GameEntity {
     protected Polygon shape;
     protected int price = 0;
     protected int maxSpeed = 2;
+    protected int id;
+    protected long seed;
+    protected Random random;
 
+    public abstract EntityData toEntityData();
+
+    public long getSeed(){
+        return this.seed;
+    }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public void setRadius(double newRadius){
+        this.radius = newRadius;
+    }
+    public void setGhostForm(int ghostFormTime) {
+        this.ghostFormTimer = ghostFormTime;
+        this.ghostForm = ghostFormTimer > 0;
+    }
+    public int getGhostTime(){
+        return this.ghostFormTimer;
+    }
 
     public void update(int width, int height){
         if(destroyed){
@@ -88,21 +115,28 @@ public abstract class GameEntity {
         return !(area1.isEmpty());
     }
 
-    public double getAngleRadians(){
-        return Math.toRadians(this.rotationAngle);
+    public double getAngle(){
+        return this.rotationAngle;
     }
+    public void setRotationAngle(double angle){
+        this.rotationAngle = angle;
+    }
+
 
     private Shape getTransformedShape(){
         AffineTransform at = new AffineTransform();
         at.translate(this.x, this.y);
-        at.rotate(this.getAngleRadians());
+        at.rotate(this.getAngle());
         return at.createTransformedShape(getShape());
     }
 
     public void setGhost(int time){
-        if(time > 0){
+        if (time > 0) {
             this.ghostForm = true;
             this.ghostFormTimer = time;
+        } else {
+            this.ghostForm = false;
+            this.ghostFormTimer = 0;
         }
     }
 
@@ -121,6 +155,11 @@ public abstract class GameEntity {
         }else{
             this.ghostForm = false;
         }
+    }
+
+    public void setSpeed(double vx, double vy){
+        this.xSpeed = vx;
+        this.ySpeed = vy;
     }
 
     protected double getMaxRadius(){
@@ -205,4 +244,5 @@ public abstract class GameEntity {
     public void entityAffect(GameEntity entity){
 
     }
+
 }
