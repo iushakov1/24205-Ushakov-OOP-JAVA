@@ -1,5 +1,8 @@
 package com.labs.game.model.entities;
 
+import com.labs.game.network.Data.BlackholeData;
+import com.labs.game.network.Data.EntityData;
+
 import java.awt.*;
 
 public class Blackhole extends GameEntity{
@@ -44,6 +47,12 @@ public class Blackhole extends GameEntity{
             yPoints[i] = (int) (pointRadius * Math.sin(angle));
         }
         return new Polygon(xPoints, yPoints, points);
+    }
+
+    @Override
+    public EntityData toEntityData() {
+        BlackholeData bData = new BlackholeData("Blackhole", id, (int)x, (int)y, getAngle(), radius, getGhostTime());
+        return bData;
     }
 
     @Override

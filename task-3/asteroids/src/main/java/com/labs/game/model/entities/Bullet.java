@@ -1,8 +1,21 @@
 package com.labs.game.model.entities;
 
+import com.labs.game.network.Data.BulletData;
+import com.labs.game.network.Data.EntityData;
+
 import java.awt.*;
 
 public class Bullet extends GameEntity{
+
+    public Bullet(int x, int y){
+        int bulletSpeed = 10;
+        this.radius = 2;
+
+        shape = generateShape();
+
+        this.x = x;
+        this.y = y;
+    }
 
     public Bullet(Ship ship){
         int bulletSpeed = 10;
@@ -15,12 +28,18 @@ public class Bullet extends GameEntity{
         this.x = ship.getX();
         this.y = ship.getY();
 
-        double radians = ship.getAngleRadians();
+        double radians = ship.getAngle();
         double rotSin = Math.sin(radians);
         double rotCos = Math.cos(radians);
 
         this.xSpeed = rotCos*bulletSpeed;
         this.ySpeed = rotSin*bulletSpeed;
+    }
+
+    @Override
+    public EntityData toEntityData() {
+        BulletData bData = new BulletData("Bullet", id, (int)x, (int)y, getAngle(), radius, getGhostTime());
+        return bData;
     }
 
     @Override

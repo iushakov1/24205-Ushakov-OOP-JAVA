@@ -1,55 +1,40 @@
 package com.labs.game.controller;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.labs.game.model.GameModel;
 import com.labs.game.model.ModelStatus;
-import com.labs.game.view.GameFrame;
-import com.labs.game.view.MenuPanel;
-
-import javax.swing.Timer;
+import com.labs.game.network.GameServer;
+import com.labs.game.network.GameState;
 
 public class GameCore {
-    private GameModel model;
-    private GameFrame frame;
-    private ShipController shipController;
-    private MenuController menuController;
-    private Timer timer;
+    private final GameModel model;
+    private final ScheduledExecutorService scheduler;
+    private final GameServer networkServer;
 
-    public GameCore(int width, int height){
-        model = new GameModel(width, height);
-        shipController = new ShipController(model.getShip());
+    public static final AtomicInteger idGenerator = new AtomicInteger(1);
 
-        frame = new GameFrame(model, shipController, width, height);
-        menuController = new MenuController(model, frame.getMenuPanel());
-        timer = new Timer(20, e -> {gameTick();});
+    public GameCore(GameModel model, GameServer networkServer) {
+        this.model = model;
+        model.changeStatus(ModelStatus.MENU);
+
+        this.networkServer = networkServer;
+        this.scheduler = Executors.newScheduledThreadPool(1);
 
     }
 
-    private void gameTick(){
+    public void start() {
 
-        switch (model.getStatus()){
-            case PLAYING:
-            {
-                shipController.handleInput();
-                break;
-            }
-            case MENU:
-            {
+        scheduler.scheduleAtFixedRate(this::gameTick, 0, 18, TimeUnit.MILLISECONDS);
+    }
 
-                break;
-            }
-            case EXITGAME:
-                this.end();
-        }
-
+    private void gameTick() {
         model.update();
-    }
 
-    public void start(){
-        timer.start();
-    }
-
-    public void end(){
-        this.frame.dispose();
-        this.timer.stop();
+        GameState currentState = model.buildGameState();
+        networkServer.broadcast(currentState);
     }
 }

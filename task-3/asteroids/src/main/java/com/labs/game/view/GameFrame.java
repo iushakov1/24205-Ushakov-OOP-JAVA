@@ -7,6 +7,7 @@ import com.labs.game.event.StatusChangeEvent;
 import com.labs.game.model.GameModel;
 import com.labs.game.model.ModelStatus;
 import com.labs.game.service.Observer;
+import java.awt.event.KeyListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class GameFrame extends JFrame implements Observer {
     GameModel model;
     ModelStatus lastStatus;
 
-    public GameFrame(GameModel model, ShipController shipController, int width, int height){
+    public GameFrame(GameModel model, KeyListener shipController, int width, int height){
         this.model = model;
 
         model.addObserver(this);
@@ -59,27 +60,32 @@ public class GameFrame extends JFrame implements Observer {
 
     public void update(){
         ModelStatus status = model.getStatus();
-        if(status == ModelStatus.PLAYING){
-            if(lastStatus != ModelStatus.PLAYING){
+        if (status == ModelStatus.PLAYING || status == ModelStatus.STARTNEWGAME) {
+            if (menuPanel.isVisible()) {
                 menuPanel.setVisible(false);
-                gamePanel.requestFocusInWindow();
+                this.requestFocusInWindow();
+                this.gamePanel.requestFocusInWindow();
             }
-            lastStatus = ModelStatus.PLAYING;
-        }
-        else{
-            menuPanel.setVisible(true);
-            lastStatus = ModelStatus.MENU;
+        } else {
+            if (!menuPanel.isVisible()) {
+                menuPanel.setVisible(true);
+            }
         }
         repaint();
     }
 
     @Override
     public void notify(Event event) {
-        if(event instanceof StatusChangeEvent){
-            this.update();
+        if (event instanceof RepaintEvent) {
+            if (this.gamePanel != null) {
+                this.gamePanel.repaint();
+            }
         }
         if(event instanceof RepaintEvent){
             gamePanel.repaint();
+        }
+        if (event instanceof StatusChangeEvent) {
+            SwingUtilities.invokeLater(this::update);
         }
     }
 

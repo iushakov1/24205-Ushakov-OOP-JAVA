@@ -21,6 +21,14 @@ public class Record {
             maxScore = curScore;
         }
     }
+
+    public void setCurScore(int newScore){
+        this.curScore = newScore;
+    }
+
+    public void setMaxScore(int newScore){
+        this.maxScore = newScore;
+    }
     public void resetMaxScore(){
         maxScore = 0;
     }

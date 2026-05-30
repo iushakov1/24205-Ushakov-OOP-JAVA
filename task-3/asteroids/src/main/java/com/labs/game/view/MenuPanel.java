@@ -12,31 +12,40 @@ import static java.awt.Font.BOLD;
 
 public class MenuPanel extends JPanel {
     private GameModel model;
-    private JButton startGameButton = new JButton("Start Game");
+    private JTextField ipField = new JTextField("127.0.0.1", 10);
+    private JTextField portField = new JTextField("8080", 5);
+    private JButton hostButton = new JButton("Host Server");
+    private JButton connectButton = new JButton("Connect");
     private JButton exitButton = new JButton("Exit");
     private final Color bgColor = new Color(0, 0, 0, 150);
     private final Font gameOverFont = new Font(Font.MONOSPACED, BOLD, 50);
 
     MenuPanel(GameModel model, int width, int height){
         this.model = model;
-        this.setOpaque(false);
-        this.setBackground(new Color(0, 0, 0, 0));
-        this.setLayout(null);
-        this.setPreferredSize(new Dimension(width, height));
+        this.setOpaque(true);
+        this.setBackground(new Color(0, 0, 0, 200));
 
-        this.addComponentListener(new MenuPanelAdapter(this));
-        this.setPreferredSize(new Dimension(width, height));
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        startGameButton.setBounds(width/4, height/4, width/2, height/10);
-        startGameButton.setFont(new Font("Comic Sans", BOLD, width/20));
-        startGameButton.setFocusable(false);
+        add(Box.createVerticalGlue());
 
-        this.exitButton.setBounds(width / 4, height / 2, width / 2, height / 10);
-        this.exitButton.setFont(new Font("MONOSPACED", BOLD, width / 20));
-        this.exitButton.setFocusable(false);
+        add(Box.createVerticalStrut(20));
 
-        this.add(startGameButton);
-        this.add(this.exitButton);
+        JPanel networkPanel = new JPanel(new FlowLayout());
+        networkPanel.setOpaque(false);
+        networkPanel.add(new JLabel("IP: "));
+        networkPanel.add(ipField);
+        networkPanel.add(portField);
+        add(networkPanel);
+
+        addButton(hostButton);
+        addButton(connectButton);
+        add(Box.createVerticalStrut(20));
+        addButton(exitButton);
+
+        add(Box.createVerticalGlue());
+
+
     }
 
     @Override
@@ -52,8 +61,9 @@ public class MenuPanel extends JPanel {
         }
     }
 
-    public void setButtonListener(ActionListener listener){
-        startGameButton.addActionListener(listener);
+    public void setButtonListener(ActionListener listener) {
+        connectButton.addActionListener(listener);
+        hostButton.addActionListener(listener);
         exitButton.addActionListener(listener);
     }
 
@@ -61,12 +71,18 @@ public class MenuPanel extends JPanel {
         return this.exitButton;
     }
 
-    public JButton getStartGameButton(){
-        return this.startGameButton;
-    }
 
     public void updateBounds(int width, int height){
-        startGameButton.setBounds(width/4, height/4, width/2, height/10);
         this.exitButton.setBounds(width / 4, height / 2, width / 2, height / 10);
     }
+    private void addButton(JButton b) {
+        b.setAlignmentX(Component.CENTER_ALIGNMENT);
+        b.setMaximumSize(new Dimension(400, 50));
+        add(b);
+    }
+
+    public JTextField getIpField() { return ipField; }
+    public JTextField getPortField() { return portField; }
+    public JButton getConnectButton() { return connectButton; }
+    public JButton getHostButton() { return hostButton; }
 }
