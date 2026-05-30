@@ -19,7 +19,6 @@ public class ClientLauncher {
 
 
         javax.swing.Timer gameTimer = new javax.swing.Timer(16, e -> {
-            model.update(GameModel.GameMode.CLIENT);
             frame.repaint();
         });
         gameTimer.start();

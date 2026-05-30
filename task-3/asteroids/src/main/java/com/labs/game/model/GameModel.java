@@ -29,7 +29,6 @@ public class GameModel extends Observable {
     private List<Ship> ships = new CopyOnWriteArrayList<>();
     private List<Bullet> bullets = new CopyOnWriteArrayList<>();
     private List<GameEntity> entities = new CopyOnWriteArrayList<>();
-    public enum GameMode { SERVER, CLIENT }
     public GameModel(int width, int height){
         this.seed = (long)(100 * Math.random());
         this.record = new Record();
@@ -45,11 +44,8 @@ public class GameModel extends Observable {
         entityFactories.put(factory.getType(), factory);
     }
 
-    public void update(GameMode gameMode){
+    public void update(){
 
-        if(gameMode == GameMode.CLIENT){
-            return;
-        }
 
         switch (this.status){
             case MENU:

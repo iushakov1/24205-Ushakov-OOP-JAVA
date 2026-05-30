@@ -26,10 +26,9 @@ public class ClientHandler implements Runnable {
 
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
-            out.flush();
             in = new ObjectInputStream(socket.getInputStream());
 
-            playerShip = new Ship((int)model.getWidth()/2,(int)model.getHeight());
+            playerShip = new Ship((int)model.getWidth()/2,(int)model.getHeight()/2);
             playerShip.setGhost(80);
             if (model.getStatus() != ModelStatus.PLAYING) {
                 model.changeStatus(ModelStatus.STARTNEWGAME);
@@ -91,7 +90,6 @@ public class ClientHandler implements Runnable {
         try {
             out.reset();
             out.writeObject(state);
-            out.flush();
         } catch (IOException e) {
             System.out.println("Cannot send data to client");
             disconnect();

@@ -39,7 +39,6 @@ public class GameClient {
     public void sendCommand(String command) {
         try {
             out.writeObject(command);
-            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

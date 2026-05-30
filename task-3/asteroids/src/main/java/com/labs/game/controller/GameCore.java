@@ -32,7 +32,7 @@ public class GameCore {
     }
 
     private void gameTick() {
-        model.update(GameModel.GameMode.SERVER);
+        model.update();
 
         GameState currentState = model.buildGameState();
         networkServer.broadcast(currentState);

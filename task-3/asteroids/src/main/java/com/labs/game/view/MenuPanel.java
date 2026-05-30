@@ -45,22 +45,7 @@ public class MenuPanel extends JPanel {
 
         add(Box.createVerticalGlue());
 
-        /*this.setLayout(null);
-        this.setPreferredSize(new Dimension(width, height));
 
-        this.addComponentListener(new MenuPanelAdapter(this));
-        this.setPreferredSize(new Dimension(width, height));
-
-        startGameButton.setBounds(width/4, height/4, width/2, height/10);
-        startGameButton.setFont(new Font("Comic Sans", BOLD, width/20));
-        startGameButton.setFocusable(false);
-
-        this.exitButton.setBounds(width / 4, height / 2, width / 2, height / 10);
-        this.exitButton.setFont(new Font("MONOSPACED", BOLD, width / 20));
-        this.exitButton.setFocusable(false);
-
-        this.add(startGameButton);
-        this.add(this.exitButton);*/
     }
 
     @Override
@@ -92,7 +77,7 @@ public class MenuPanel extends JPanel {
     }
     private void addButton(JButton b) {
         b.setAlignmentX(Component.CENTER_ALIGNMENT);
-        b.setMaximumSize(new Dimension(300, 50));
+        b.setMaximumSize(new Dimension(400, 50));
         add(b);
     }
 
